@@ -16,7 +16,7 @@ We build in stages. Each stage ends with `make gate-N`, a report in `docs/stages
 - **Signed off, on sample inputs.** Stage 7b: posting approved journals to the Databricks ledger exactly once, the ERP write-back (with a stub ERP), trial balance and drill-down, a Postgres-to-Delta tie-out, and XLSX import.
 - **Signed off, on sample inputs.** Stage 7c: manual journals in foreign currencies, converted at submit under D9 at rates from a narrow, typed lookup, and posted in functional terms. Stage 7 is complete.
 - **Signed off, on sample inputs.** Stage 8a, the first part of close management: the engine's journals in the Databricks GL through a sample stand-in job, balances and roll-forward from the whole GL, and the ERP's trial balance with a Delta-to-ERP tie-out.
-- **Built, waiting for sign-off.** Stage 8b, the close: a soft close, the close checklist and flux analysis as configuration, and a hard close that waits for them. Its gate passed 128 of 128.
+- **Signed off, on sample inputs.** Stage 8b, the close: a soft close, the close checklist and flux analysis as configuration, and a hard close that waits for them.
 - **Next.** 8c, account reconciliations.
 - **Needed before production.** The real Stage 6 inputs: the signed accounting-policy sheet, the chart of accounts and the dimensions ([docs/domain/stage-6-inputs.md](docs/domain/stage-6-inputs.md)).
 

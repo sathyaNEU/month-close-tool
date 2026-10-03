@@ -902,3 +902,7 @@ def lower(ir: RuleIR) -> CompiledRule: ...                              # close_
     - **Flux explanations** are bound to the server's amounts, and the review to a hash of the lines.
   - **`PeriodCloseWorkflow`.** A period with a checklist is soft-closed first, and closes only when every task is done and no GL check predates the ledger's last change. On the stack, US01's July is soft-closed, reviewed and closed.
   - **Waiting for your sign-off.**
+- **2026-10-03.** You signed off Stage 8b ([docs/stages/stage-8b-signoff.md](../stages/stage-8b-signoff.md)). Its gate passed 128 of 128 criteria on the first run.
+  - **The sign-off accepts** ADR-0020 (the soft close, the close checklist and flux rules as configuration, flux explanations bound to the server's amounts, and the hard close), and the contract changes (the `close_checklist` and `flux_rules` kinds, `soft_closed`, and the `close.prepare` and `close.review` actions).
+  - **The repository moves to GitHub,** and development continues in Claude Code in the cloud. [CLAUDE.md](../../CLAUDE.md) carries the standing rules.
+  - **Next, by your choice:** 8c on sample inputs, account reconciliations.

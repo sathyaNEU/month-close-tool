@@ -1,6 +1,6 @@
 # Where we are, and what happens next (resume note)
 
-## Progress checkpoint (2026-10-03, Stage 8b built and its gate passed; sign-off pending; moving to Claude Code in the cloud)
+## Progress checkpoint (2026-10-03, Stage 8b signed off; 8c on sample inputs next, in Claude Code in the cloud)
 
 - **Signed off:**
   - Stages 0 to 2b;
@@ -10,14 +10,9 @@
   - Stage 7a ([stage-7a-signoff.md](stage-7a-signoff.md), gate 84 of 84);
   - Stage 7b ([stage-7b-signoff.md](stage-7b-signoff.md), gate 97 of 97). D19 keeps its default for now (an ERP stays the book of record), and `psycopg[binary]` is approved for the engine;
   - Stage 7c ([stage-7c-signoff.md](stage-7c-signoff.md), gate 109 of 109). Stage 7 is complete on sample inputs;
-  - Stage 8a, the general ledger ([stage-8a-signoff.md](stage-8a-signoff.md), gate 118 of 118). The user accepted ADR-0019 and approved the `journal_ref` stand-in job (the reference engine as a job, on sample volumes, until the rule compiler exists). Stage 8 is split into 8a, 8b and 8c ([stage-8-plan.md](stage-8-plan.md)), each with its own gate.
-- **Built, waiting for sign-off:** Stage 8b, the close ([stage-8b-report.md](stage-8b-report.md), gate 128 of 128 on the first run, [ADR-0020](../adr/0020-the-period-close.md)). If the user hasn't answered yet, ask:
-  1. Accept ADR-0020: the soft close (automated entries stop, manual ones continue), the checklist and flux rules as configuration, flux explanations bound to the server's amounts, and the hard close that waits for the checklist with no GL check older than the ledger's last change.
-  2. Accept the contract changes: the `close_checklist` and `flux_rules` kinds (with their snapshots), the `soft_closed` period status, and the `close.prepare` and `close.review` actions.
-  3. Next: 8c on sample inputs, or wait for the real inputs.
-
-  Then write `stage-8b-signoff.md` and record it in the roadmap, the README and this note.
-- **Next, after the sign-off.** 8c on sample inputs: account reconciliations (profiles with auto-certification rules, risk ratings and frequency; templates 8 and 12 through a supporting-balances job; reconciling items with aging; certification with separation of duties), joining the close checklist as a system check. Add its detailed decisions and gate to `stage-8-plan.md` (approved automatically), build, run `make gate-8c`, and stop for sign-off. Revaluation of foreign-currency balances at period end is still to place in Stage 8.
+  - Stage 8a, the general ledger ([stage-8a-signoff.md](stage-8a-signoff.md), gate 118 of 118). The user accepted ADR-0019 and approved the `journal_ref` stand-in job (the reference engine as a job, on sample volumes, until the rule compiler exists). Stage 8 is split into 8a, 8b and 8c ([stage-8-plan.md](stage-8-plan.md)), each with its own gate;
+  - Stage 8b, the close ([stage-8b-signoff.md](stage-8b-signoff.md), gate 128 of 128). The user accepted ADR-0020 and its contract changes.
+- **Next, by the user's choice.** 8c on sample inputs: account reconciliations (profiles with auto-certification rules, risk ratings and frequency; templates 8 and 12 through a supporting-balances job; reconciling items with aging; certification with separation of duties), joining the close checklist as a system check. Add its detailed decisions and gate to `stage-8-plan.md` (approved automatically), build, run `make gate-8c`, and stop for sign-off. Revaluation of foreign-currency balances at period end is still to place in Stage 8.
 - **The repository** is on GitHub at `github.com/sathyaNEU/month-close-tool` (public). The research (`reports/`, `research_notes/`) stays private and isn't in it. [CLAUDE.md](../../CLAUDE.md) holds the owner's standing rules and what runs where. A new environment should check what it can run, from `make lint typecheck test-unit test-reference` up; the stack, the end-to-end suite and the gates need Docker with about 10 GB of memory.
 - **Still waiting on the user.** The real inputs:
   - Stage 6's: the signed accounting-policy sheet with its incentive-cap question, the chart of accounts and the dimensions ([stage-6-inputs.md](../domain/stage-6-inputs.md));
