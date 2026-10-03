@@ -1,0 +1,29 @@
+{
+  "_sample": "SAMPLE configuration for testing, not your company's accounting (docs/domain/sample-journal-rules.md)",
+  "body": {
+    "effective_from": "2026-06-01",
+    "spec": {
+      "default_account": null,
+      "description": "Where money held by payment providers is carried",
+      "keys": [
+        "presentation of the PSP receivable"
+      ],
+      "mapping_id": "sample_psp_receivable_account",
+      "rows": [
+        {
+          "account": "1110",
+          "match": [
+            "cash_equivalent"
+          ]
+        },
+        {
+          "account": "1120",
+          "match": [
+            "accounts_receivable"
+          ]
+        }
+      ]
+    }
+  },
+  "resource": "account-mappings"
+}

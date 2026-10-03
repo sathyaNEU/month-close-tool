@@ -1,0 +1,152 @@
+{
+  "$defs": {
+    "CloseTask": {
+      "additionalProperties": false,
+      "properties": {
+        "check": {
+          "anyOf": [
+            {
+              "enum": [
+                "journals_settled",
+                "suspense_clear",
+                "gl_balanced",
+                "erp_ties",
+                "flux_reviewed"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Check"
+        },
+        "depends_on": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 20,
+          "title": "Depends On",
+          "type": "array"
+        },
+        "due_day": {
+          "maximum": 20,
+          "minimum": -20,
+          "title": "Due Day",
+          "type": "integer"
+        },
+        "entities": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 50,
+          "title": "Entities",
+          "type": "array"
+        },
+        "instructions": {
+          "default": "",
+          "maxLength": 4000,
+          "title": "Instructions",
+          "type": "string"
+        },
+        "name": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "preparer": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Za-z0-9._@-]{1,128}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Preparer"
+        },
+        "reviewer": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Za-z0-9._@-]{1,128}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reviewer"
+        },
+        "task_id": {
+          "pattern": "^[a-z][a-z0-9_]{0,40}$",
+          "title": "Task Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "task_id",
+        "name",
+        "due_day"
+      ],
+      "title": "CloseTask",
+      "type": "object"
+    },
+    "TaskReminders": {
+      "additionalProperties": false,
+      "properties": {
+        "escalate_after_days": {
+          "default": 2,
+          "maximum": 30,
+          "minimum": 1,
+          "title": "Escalate After Days",
+          "type": "integer"
+        }
+      },
+      "title": "TaskReminders",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "checklist_id": {
+      "pattern": "^[a-z][a-z0-9_]{2,63}$",
+      "title": "Checklist Id",
+      "type": "string"
+    },
+    "name": {
+      "maxLength": 200,
+      "minLength": 1,
+      "title": "Name",
+      "type": "string"
+    },
+    "reminders": {
+      "$ref": "#/$defs/TaskReminders",
+      "default": {
+        "escalate_after_days": 2
+      }
+    },
+    "tasks": {
+      "items": {
+        "$ref": "#/$defs/CloseTask"
+      },
+      "maxItems": 200,
+      "minItems": 1,
+      "title": "Tasks",
+      "type": "array"
+    }
+  },
+  "required": [
+    "checklist_id",
+    "name",
+    "tasks"
+  ],
+  "title": "CloseChecklist",
+  "type": "object"
+}

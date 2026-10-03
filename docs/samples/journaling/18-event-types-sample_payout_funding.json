@@ -1,0 +1,66 @@
+{
+  "_sample": "SAMPLE configuration for testing, not your company's accounting (docs/domain/sample-journal-rules.md)",
+  "body": {
+    "effective_from": "2026-06-01",
+    "spec": {
+      "amounts": [
+        "amount"
+      ],
+      "attributes": [
+        "provider"
+      ],
+      "description": "The platform funds a payout provider from its bank account",
+      "event_type": "PAYOUT_FUNDING",
+      "identities": [],
+      "sources": [
+        {
+          "filter": null,
+          "landing_table": "landing.payout_funding",
+          "lookups": [],
+          "mapping": {
+            "accounting_date": {
+              "col": "value_date"
+            },
+            "amount_amount": {
+              "args": [
+                {
+                  "args": [
+                    {
+                      "args": [
+                        {
+                          "col": "amount"
+                        },
+                        {
+                          "lit": "0",
+                          "type": "string"
+                        }
+                      ],
+                      "fn": "coalesce"
+                    }
+                  ],
+                  "fn": "parse_decimal"
+                },
+                {
+                  "col": "currency"
+                }
+              ],
+              "fn": "to_minor_units"
+            },
+            "attr_provider": {
+              "col": "provider"
+            },
+            "currency": {
+              "col": "currency"
+            },
+            "entity_id": {
+              "col": "entity_id"
+            }
+          },
+          "source_id": "payout_funding"
+        }
+      ],
+      "type_id": "sample_payout_funding"
+    }
+  },
+  "resource": "event-types"
+}

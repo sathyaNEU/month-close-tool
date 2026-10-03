@@ -1,0 +1,45 @@
+# Fast checks on every commit. The full suite runs in `make ci` / GitHub Actions.
+# Research outputs are kept byte-for-byte as delivered, so no hook rewrites them.
+exclude: ^(reports|research_notes)/
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-added-large-files
+        args: ["--maxkb=1024"]
+      - id: check-merge-conflict
+      - id: check-toml
+      - id: check-yaml
+      - id: detect-private-key
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+  - repo: local
+    hooks:
+      - id: ruff-check
+        name: ruff check
+        entry: uv run --frozen ruff check --force-exclude
+        language: system
+        types: [python]
+      - id: ruff-format
+        name: ruff format --check
+        entry: uv run --frozen ruff format --check --force-exclude
+        language: system
+        types: [python]
+      - id: spark-bans
+        name: banned Spark APIs (engine and read path)
+        entry: uv run --frozen python tools/lint_spark_bans.py
+        language: system
+        pass_filenames: false
+        files: ^(engine/src/|libs/platform/src/close_platform/query/)
+      - id: test-vectors
+        name: shared test vectors are current
+        entry: uv run --frozen python tools/gen_test_vectors.py --check
+        language: system
+        pass_filenames: false
+        files: ^(libs/contracts/src/|tools/gen_test_vectors\.py)
+      - id: mypy
+        name: mypy --strict
+        entry: uv run --frozen mypy libs/contracts/src libs/platform/src engine/src services/app/src services/jobs_emulator/src services/app/migrations tools
+        language: system
+        pass_filenames: false
+        types: [python]

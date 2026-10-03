@@ -1,0 +1,278 @@
+{
+  "$defs": {
+    "Bypass": {
+      "additionalProperties": false,
+      "description": "Journals that may skip approval. Each one is flagged and listed in the exception report.",
+      "properties": {
+        "recurring": {
+          "default": false,
+          "title": "Recurring",
+          "type": "boolean"
+        },
+        "reversals": {
+          "default": false,
+          "title": "Reversals",
+          "type": "boolean"
+        },
+        "up_to_minor": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "default": {},
+          "title": "Up To Minor",
+          "type": "object"
+        }
+      },
+      "title": "Bypass",
+      "type": "object"
+    },
+    "LevelThresholds": {
+      "additionalProperties": false,
+      "description": "Where levels 2 and 3 start, on a journal's total debits in this functional currency (level 1 is the least).",
+      "properties": {
+        "currency": {
+          "pattern": "^[A-Z]{3}$",
+          "title": "Currency",
+          "type": "string"
+        },
+        "level_2_from_minor": {
+          "minimum": 1,
+          "title": "Level 2 From Minor",
+          "type": "integer"
+        },
+        "level_3_from_minor": {
+          "minimum": 1,
+          "title": "Level 3 From Minor",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "currency",
+        "level_2_from_minor",
+        "level_3_from_minor"
+      ],
+      "title": "LevelThresholds",
+      "type": "object"
+    },
+    "Reminders": {
+      "additionalProperties": false,
+      "properties": {
+        "escalate_after": {
+          "default": 2,
+          "maximum": 20,
+          "minimum": 1,
+          "title": "Escalate After",
+          "type": "integer"
+        },
+        "first_after_hours": {
+          "default": 24,
+          "maximum": 720,
+          "minimum": 1,
+          "title": "First After Hours",
+          "type": "integer"
+        },
+        "repeat_every_hours": {
+          "default": 24,
+          "maximum": 720,
+          "minimum": 1,
+          "title": "Repeat Every Hours",
+          "type": "integer"
+        }
+      },
+      "title": "Reminders",
+      "type": "object"
+    },
+    "RiskScoring": {
+      "additionalProperties": false,
+      "description": "The AS 2401.61 risk score. Each true factor adds its weight, and the bands raise the levels needed.\n\nThe inputs are: (a) an account with no approved line in ``seldom_used_days``; (b) a preparer with fewer than\n``infrequent_preparer_below`` journals in ``infrequent_preparer_days``; (c) a date in the period's last\n``period_end_days`` days, or a submission after the period ended, with a description shorter than\n``thin_description_below``; (d) a line on a sensitive account or on suspense; (e) a line that is a multiple of\n``round_amount_minor``, or three or more lines sharing their last three digits.",
+      "properties": {
+        "infrequent_preparer_below": {
+          "default": 3,
+          "maximum": 1000,
+          "minimum": 1,
+          "title": "Infrequent Preparer Below",
+          "type": "integer"
+        },
+        "infrequent_preparer_days": {
+          "default": 90,
+          "maximum": 730,
+          "minimum": 1,
+          "title": "Infrequent Preparer Days",
+          "type": "integer"
+        },
+        "level_2_from": {
+          "minimum": 1,
+          "title": "Level 2 From",
+          "type": "integer"
+        },
+        "level_3_from": {
+          "minimum": 1,
+          "title": "Level 3 From",
+          "type": "integer"
+        },
+        "period_end_days": {
+          "default": 3,
+          "maximum": 15,
+          "minimum": 0,
+          "title": "Period End Days",
+          "type": "integer"
+        },
+        "round_amount_minor": {
+          "default": 100000,
+          "minimum": 100,
+          "title": "Round Amount Minor",
+          "type": "integer"
+        },
+        "seldom_used_days": {
+          "default": 90,
+          "maximum": 730,
+          "minimum": 1,
+          "title": "Seldom Used Days",
+          "type": "integer"
+        },
+        "sensitive_accounts": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Sensitive Accounts",
+          "type": "array"
+        },
+        "thin_description_below": {
+          "default": 20,
+          "maximum": 500,
+          "minimum": 1,
+          "title": "Thin Description Below",
+          "type": "integer"
+        },
+        "version": {
+          "default": 1,
+          "minimum": 1,
+          "title": "Version",
+          "type": "integer"
+        },
+        "weights": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "propertyNames": {
+            "enum": [
+              "seldom_used_account",
+              "infrequent_preparer",
+              "period_end_thin_description",
+              "sensitive_account",
+              "round_amount"
+            ]
+          },
+          "title": "Weights",
+          "type": "object"
+        }
+      },
+      "required": [
+        "weights",
+        "level_2_from",
+        "level_3_from"
+      ],
+      "title": "RiskScoring",
+      "type": "object"
+    },
+    "RoutingRule": {
+      "additionalProperties": false,
+      "description": "Journals matching every listed condition need at least ``min_levels`` levels. An empty list matches all.",
+      "properties": {
+        "accounts": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Accounts",
+          "type": "array"
+        },
+        "entities": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Entities",
+          "type": "array"
+        },
+        "min_levels": {
+          "maximum": 3,
+          "minimum": 1,
+          "title": "Min Levels",
+          "type": "integer"
+        },
+        "rule_id": {
+          "pattern": "^[a-z][a-z0-9_]{0,40}$",
+          "title": "Rule Id",
+          "type": "string"
+        },
+        "templates": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Templates",
+          "type": "array"
+        }
+      },
+      "required": [
+        "rule_id",
+        "min_levels"
+      ],
+      "title": "RoutingRule",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "bypass": {
+      "$ref": "#/$defs/Bypass",
+      "default": {
+        "recurring": false,
+        "reversals": false,
+        "up_to_minor": {}
+      }
+    },
+    "matrix_id": {
+      "pattern": "^[a-z][a-z0-9_]{2,63}$",
+      "title": "Matrix Id",
+      "type": "string"
+    },
+    "reminders": {
+      "$ref": "#/$defs/Reminders",
+      "default": {
+        "escalate_after": 2,
+        "first_after_hours": 24,
+        "repeat_every_hours": 24
+      }
+    },
+    "risk": {
+      "$ref": "#/$defs/RiskScoring"
+    },
+    "rules": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/RoutingRule"
+      },
+      "maxItems": 200,
+      "title": "Rules",
+      "type": "array"
+    },
+    "thresholds": {
+      "items": {
+        "$ref": "#/$defs/LevelThresholds"
+      },
+      "minItems": 1,
+      "title": "Thresholds",
+      "type": "array"
+    }
+  },
+  "required": [
+    "matrix_id",
+    "thresholds",
+    "risk"
+  ],
+  "title": "ApprovalMatrix",
+  "type": "object"
+}

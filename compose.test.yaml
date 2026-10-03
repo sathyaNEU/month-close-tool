@@ -1,0 +1,45 @@
+# Test dependencies for host-side tests (make test-parity / test-int).
+# Ports bind to 127.0.0.1 only. Credentials come from .local/secrets (make secrets).
+name: close-test
+
+services:
+  # S3-compatible object store standing in for AWS S3 (MinIO community edition was archived on
+  # 2026-04-25; see docs/adr/0003-local-object-store-seaweedfs.md).
+  seaweedfs:
+    image: chrislusf/seaweedfs:4.47
+    command: >-
+      server -dir=/data -ip.bind=0.0.0.0
+      -master.volumeSizeLimitMB=256 -volume.max=100
+      -s3 -s3.port=8333 -s3.config=/etc/seaweedfs/s3.json
+    ports:
+      - "127.0.0.1:8333:8333"
+    volumes:
+      - ./.local/secrets/seaweedfs-s3.json:/etc/seaweedfs/s3.json:ro
+      - seaweedfs-data:/data
+    healthcheck:
+      # Ready only when the master answers AND the S3 gateway returns any HTTP response (403 without auth).
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:9333/cluster/status && wget -S -O /dev/null http://127.0.0.1:8333/ 2>&1 | grep -q 'HTTP/'"]
+      interval: 3s
+      timeout: 3s
+      retries: 40
+    mem_limit: 768m
+
+  # Control-plane database for host-side tests (profile `pg`): same roles and init script as the dev
+  # stack, published on 127.0.0.1:55432 so it never collides with a Postgres already on the machine.
+  postgres:
+    image: postgres:17.11
+    profiles: ["pg"]
+    env_file: .local/secrets/postgres.env
+    volumes:
+      - ./deploy/postgres/initdb:/docker-entrypoint-initdb.d:ro
+    ports:
+      - "127.0.0.1:55432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d close"]
+      interval: 2s
+      timeout: 3s
+      retries: 60
+    mem_limit: 384m
+
+volumes:
+  seaweedfs-data:

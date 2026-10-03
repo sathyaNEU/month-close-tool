@@ -1,0 +1,29 @@
+{
+  "_sample": "SAMPLE configuration for testing, not your company's accounting (docs/domain/sample-journal-rules.md)",
+  "body": {
+    "effective_from": "2026-06-01",
+    "spec": {
+      "default_account": null,
+      "description": "Payment processing fees",
+      "keys": [
+        "presentation of processing fees"
+      ],
+      "mapping_id": "sample_processing_fee_account",
+      "rows": [
+        {
+          "account": "5030",
+          "match": [
+            "cost_of_revenue"
+          ]
+        },
+        {
+          "account": "6030",
+          "match": [
+            "sga"
+          ]
+        }
+      ]
+    }
+  },
+  "resource": "account-mappings"
+}

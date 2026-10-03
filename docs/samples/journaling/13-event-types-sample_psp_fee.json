@@ -1,0 +1,203 @@
+{
+  "_sample": "SAMPLE configuration for testing, not your company's accounting (docs/domain/sample-journal-rules.md)",
+  "body": {
+    "effective_from": "2026-06-01",
+    "spec": {
+      "amounts": [
+        "fee"
+      ],
+      "attributes": [
+        "psp"
+      ],
+      "description": "A payment provider's processing fee, taken out of the settlement",
+      "event_type": "PSP_FEE",
+      "identities": [],
+      "sources": [
+        {
+          "filter": {
+            "args": [
+              {
+                "args": [
+                  {
+                    "col": "type"
+                  },
+                  {
+                    "lit": "charge",
+                    "type": "string"
+                  }
+                ],
+                "fn": "eq"
+              },
+              {
+                "args": [
+                  {
+                    "col": "fee"
+                  },
+                  {
+                    "lit": 0,
+                    "type": "bigint"
+                  }
+                ],
+                "fn": "gt"
+              }
+            ],
+            "fn": "and"
+          },
+          "landing_table": "landing.stripe_balance_transactions",
+          "lookups": [
+            {
+              "alias": "order",
+              "on": {
+                "order_id": {
+                  "col": "order_ref"
+                }
+              },
+              "table": "landing.orders"
+            }
+          ],
+          "mapping": {
+            "accounting_date": {
+              "args": [
+                {
+                  "col": "created"
+                }
+              ],
+              "fn": "date_of"
+            },
+            "amount_fee": {
+              "col": "fee"
+            },
+            "attr_psp": {
+              "lit": "stripe",
+              "type": "string"
+            },
+            "currency": {
+              "args": [
+                {
+                  "col": "currency"
+                }
+              ],
+              "fn": "upper"
+            },
+            "entity_id": {
+              "args": [
+                {
+                  "col": "account_id"
+                },
+                {
+                  "lit": "^acct_1Platform([A-Z0-9]+)",
+                  "type": "string"
+                },
+                {
+                  "lit": 1,
+                  "type": "bigint"
+                }
+              ],
+              "fn": "regex_extract"
+            },
+            "order_id": {
+              "col": "order_ref"
+            },
+            "program": {
+              "col": "order_program"
+            }
+          },
+          "source_id": "stripe_charges"
+        },
+        {
+          "filter": {
+            "args": [
+              {
+                "col": "type"
+              },
+              {
+                "lit": "Settled",
+                "type": "string"
+              }
+            ],
+            "fn": "eq"
+          },
+          "landing_table": "landing.adyen_settlement_details",
+          "lookups": [
+            {
+              "alias": "order",
+              "on": {
+                "order_id": {
+                  "col": "merchant_reference"
+                }
+              },
+              "table": "landing.orders"
+            }
+          ],
+          "mapping": {
+            "accounting_date": {
+              "args": [
+                {
+                  "col": "creation_date"
+                }
+              ],
+              "fn": "date_of"
+            },
+            "amount_fee": {
+              "args": [
+                {
+                  "args": [
+                    {
+                      "args": [
+                        {
+                          "col": "commission"
+                        },
+                        {
+                          "lit": "0",
+                          "type": "string"
+                        }
+                      ],
+                      "fn": "coalesce"
+                    }
+                  ],
+                  "fn": "parse_decimal"
+                },
+                {
+                  "col": "net_currency"
+                }
+              ],
+              "fn": "to_minor_units"
+            },
+            "attr_psp": {
+              "lit": "adyen",
+              "type": "string"
+            },
+            "currency": {
+              "col": "net_currency"
+            },
+            "entity_id": {
+              "args": [
+                {
+                  "col": "merchant_account"
+                },
+                {
+                  "lit": "^Platform([A-Z0-9]+)",
+                  "type": "string"
+                },
+                {
+                  "lit": 1,
+                  "type": "bigint"
+                }
+              ],
+              "fn": "regex_extract"
+            },
+            "order_id": {
+              "col": "merchant_reference"
+            },
+            "program": {
+              "col": "order_program"
+            }
+          },
+          "source_id": "adyen_settled"
+        }
+      ],
+      "type_id": "sample_psp_fee"
+    }
+  },
+  "resource": "event-types"
+}

@@ -1,0 +1,134 @@
+{
+  "$defs": {
+    "IncentiveTreatment": {
+      "enum": [
+        "contra_revenue",
+        "contra_up_to_cumulative_then_marketing",
+        "marketing"
+      ],
+      "title": "IncentiveTreatment",
+      "type": "string"
+    },
+    "Presentation": {
+      "additionalProperties": false,
+      "properties": {
+        "chargebacks": {
+          "enum": [
+            "reserve",
+            "transaction_loss"
+          ],
+          "title": "Chargebacks",
+          "type": "string"
+        },
+        "processing_fees": {
+          "enum": [
+            "cost_of_revenue",
+            "sga"
+          ],
+          "title": "Processing Fees",
+          "type": "string"
+        },
+        "psp_receivable": {
+          "enum": [
+            "cash_equivalent",
+            "accounts_receivable"
+          ],
+          "title": "Psp Receivable",
+          "type": "string"
+        }
+      },
+      "required": [
+        "psp_receivable",
+        "processing_fees",
+        "chargebacks"
+      ],
+      "title": "Presentation",
+      "type": "object"
+    },
+    "Program": {
+      "enum": [
+        "verified_marketplace",
+        "direct_ship",
+        "consignment",
+        "listings"
+      ],
+      "title": "Program",
+      "type": "string"
+    },
+    "ProgramModel": {
+      "enum": [
+        "agent",
+        "owned_inventory"
+      ],
+      "title": "ProgramModel",
+      "type": "string"
+    },
+    "ProgramPolicy": {
+      "additionalProperties": false,
+      "properties": {
+        "incentives": {
+          "$ref": "#/$defs/IncentiveTreatment"
+        },
+        "model": {
+          "$ref": "#/$defs/ProgramModel"
+        },
+        "program": {
+          "$ref": "#/$defs/Program"
+        },
+        "shipping": {
+          "$ref": "#/$defs/ShippingTreatment"
+        },
+        "trigger": {
+          "$ref": "#/$defs/Trigger"
+        }
+      },
+      "required": [
+        "program",
+        "trigger",
+        "model",
+        "shipping",
+        "incentives"
+      ],
+      "title": "ProgramPolicy",
+      "type": "object"
+    },
+    "ShippingTreatment": {
+      "enum": [
+        "net_as_agent",
+        "gross"
+      ],
+      "title": "ShippingTreatment",
+      "type": "string"
+    },
+    "Trigger": {
+      "enum": [
+        "payment",
+        "verification_passed",
+        "shipped",
+        "delivered",
+        "return_window_closed"
+      ],
+      "title": "Trigger",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "presentation": {
+      "$ref": "#/$defs/Presentation"
+    },
+    "programs": {
+      "items": {
+        "$ref": "#/$defs/ProgramPolicy"
+      },
+      "title": "Programs",
+      "type": "array"
+    }
+  },
+  "required": [
+    "programs",
+    "presentation"
+  ],
+  "title": "AccountingPolicy",
+  "type": "object"
+}

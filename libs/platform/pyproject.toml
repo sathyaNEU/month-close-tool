@@ -1,0 +1,26 @@
+[project]
+name = "close-platform"
+version = "0.1.0"
+description = "Control-plane building blocks: Postgres access, runs registry, writer leases, outbox, scheduler, compute adapters."
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "close-contracts",
+  "sqlalchemy>=2.0.40,<2.1",
+  "psycopg[binary]>=3.2,<4",
+  "databricks-sdk==0.143.0",
+]
+
+[project.optional-dependencies]
+# The read path's Spark Connect client for deployment (the dev environment gets the same client from
+# the full pyspark in the root `local` group). Versions match the DBR 18 pins the tests run with.
+connect = ["pyspark-client==4.1.3", "pandas==2.2.3", "pyarrow==21.0.0", "numpy==2.1.3"]
+
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/close_platform"]
+
+[tool.uv.sources]
+close-contracts = { workspace = true }

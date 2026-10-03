@@ -1,0 +1,29 @@
+{
+  "_sample": "SAMPLE configuration for testing, not your company's accounting (docs/domain/sample-journal-rules.md)",
+  "body": {
+    "effective_from": "2026-06-01",
+    "spec": {
+      "default_account": null,
+      "description": "Lost chargebacks",
+      "keys": [
+        "chargeback treatment"
+      ],
+      "mapping_id": "sample_chargeback_account",
+      "rows": [
+        {
+          "account": "2310",
+          "match": [
+            "reserve"
+          ]
+        },
+        {
+          "account": "6040",
+          "match": [
+            "transaction_loss"
+          ]
+        }
+      ]
+    }
+  },
+  "resource": "account-mappings"
+}

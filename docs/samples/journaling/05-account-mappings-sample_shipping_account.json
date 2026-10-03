@@ -1,0 +1,29 @@
+{
+  "_sample": "SAMPLE configuration for testing, not your company's accounting (docs/domain/sample-journal-rules.md)",
+  "body": {
+    "effective_from": "2026-06-01",
+    "spec": {
+      "default_account": null,
+      "description": "Shipping charged to buyers",
+      "keys": [
+        "shipping treatment"
+      ],
+      "mapping_id": "sample_shipping_account",
+      "rows": [
+        {
+          "account": "4040",
+          "match": [
+            "gross"
+          ]
+        },
+        {
+          "account": "5021",
+          "match": [
+            "net_as_agent"
+          ]
+        }
+      ]
+    }
+  },
+  "resource": "account-mappings"
+}

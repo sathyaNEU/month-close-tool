@@ -1,0 +1,89 @@
+{
+  "$defs": {
+    "FluxThreshold": {
+      "additionalProperties": false,
+      "description": "A change needs an explanation when it reaches the amount and (or, with ``or``) the percent.",
+      "properties": {
+        "amounts": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "title": "Amounts",
+          "type": "object"
+        },
+        "operator": {
+          "default": "and",
+          "enum": [
+            "and",
+            "or"
+          ],
+          "title": "Operator",
+          "type": "string"
+        },
+        "percent": {
+          "anyOf": [
+            {
+              "maximum": 10000.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "title": "Percent"
+        }
+      },
+      "required": [
+        "amounts",
+        "percent"
+      ],
+      "title": "FluxThreshold",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "accounts": {
+      "additionalProperties": {
+        "$ref": "#/$defs/FluxThreshold"
+      },
+      "default": {},
+      "title": "Accounts",
+      "type": "object"
+    },
+    "basis": {
+      "const": "prior_period",
+      "default": "prior_period",
+      "title": "Basis",
+      "type": "string"
+    },
+    "by_type": {
+      "additionalProperties": {
+        "$ref": "#/$defs/FluxThreshold"
+      },
+      "propertyNames": {
+        "enum": [
+          "asset",
+          "liability",
+          "equity",
+          "revenue",
+          "expense"
+        ]
+      },
+      "title": "By Type",
+      "type": "object"
+    },
+    "rules_id": {
+      "pattern": "^[a-z][a-z0-9_]{2,63}$",
+      "title": "Rules Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "rules_id",
+    "by_type"
+  ],
+  "title": "FluxRules",
+  "type": "object"
+}

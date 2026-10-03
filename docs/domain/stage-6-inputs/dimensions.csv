@@ -1,0 +1,2 @@
+dimension_code,dimension_name,required_on,description
+EXAMPLE-PROGRAM,Marketplace program,revenue;expense,Example row only: which account types must carry this dimension

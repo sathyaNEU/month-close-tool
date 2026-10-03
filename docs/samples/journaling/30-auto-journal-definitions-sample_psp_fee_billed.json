@@ -1,0 +1,51 @@
+{
+  "_sample": "SAMPLE configuration for testing, not your company's accounting (docs/domain/sample-journal-rules.md)",
+  "body": {
+    "effective_from": "2026-06-01",
+    "spec": {
+      "condition": null,
+      "definition_id": "sample_psp_fee_billed",
+      "event_types": [
+        "PSP_FEE_BILLED"
+      ],
+      "lines": [
+        {
+          "account": {
+            "account": null,
+            "keys": [
+              {
+                "col": "policy_processing_fees"
+              }
+            ],
+            "mapping": "sample_processing_fee_account"
+          },
+          "amount": {
+            "col": "amount_fee"
+          },
+          "condition": null,
+          "description": null,
+          "dimensions": {},
+          "line_id": "fee",
+          "side": "DR"
+        },
+        {
+          "account": {
+            "account": "2430",
+            "keys": [],
+            "mapping": null
+          },
+          "amount": {
+            "col": "amount_fee"
+          },
+          "condition": null,
+          "description": null,
+          "dimensions": {},
+          "line_id": "payable",
+          "side": "CR"
+        }
+      ],
+      "name": "Processing fees invoiced monthly"
+    }
+  },
+  "resource": "auto-journal-definitions"
+}

@@ -1,0 +1,143 @@
+{
+  "_sample": "SAMPLE configuration for testing, not your company's accounting (docs/domain/sample-journal-rules.md)",
+  "body": {
+    "effective_from": "2026-06-01",
+    "spec": {
+      "amounts": [
+        "amount"
+      ],
+      "attributes": [
+        "psp"
+      ],
+      "description": "A payment provider pays out the settled balance to the platform's bank account",
+      "event_type": "PSP_PAYOUT",
+      "identities": [],
+      "sources": [
+        {
+          "filter": null,
+          "landing_table": "landing.stripe_payouts",
+          "lookups": [],
+          "mapping": {
+            "accounting_date": {
+              "args": [
+                {
+                  "col": "created"
+                }
+              ],
+              "fn": "date_of"
+            },
+            "amount_amount": {
+              "col": "amount"
+            },
+            "attr_psp": {
+              "lit": "stripe",
+              "type": "string"
+            },
+            "currency": {
+              "args": [
+                {
+                  "col": "currency"
+                }
+              ],
+              "fn": "upper"
+            },
+            "entity_id": {
+              "args": [
+                {
+                  "col": "account_id"
+                },
+                {
+                  "lit": "^acct_1Platform([A-Z0-9]+)",
+                  "type": "string"
+                },
+                {
+                  "lit": 1,
+                  "type": "bigint"
+                }
+              ],
+              "fn": "regex_extract"
+            }
+          },
+          "source_id": "stripe_payouts"
+        },
+        {
+          "filter": {
+            "args": [
+              {
+                "col": "type"
+              },
+              {
+                "lit": "MerchantPayout",
+                "type": "string"
+              }
+            ],
+            "fn": "eq"
+          },
+          "landing_table": "landing.adyen_settlement_details",
+          "lookups": [],
+          "mapping": {
+            "accounting_date": {
+              "args": [
+                {
+                  "col": "creation_date"
+                }
+              ],
+              "fn": "date_of"
+            },
+            "amount_amount": {
+              "args": [
+                {
+                  "args": [
+                    {
+                      "args": [
+                        {
+                          "col": "net_debit"
+                        },
+                        {
+                          "lit": "0",
+                          "type": "string"
+                        }
+                      ],
+                      "fn": "coalesce"
+                    }
+                  ],
+                  "fn": "parse_decimal"
+                },
+                {
+                  "col": "net_currency"
+                }
+              ],
+              "fn": "to_minor_units"
+            },
+            "attr_psp": {
+              "lit": "adyen",
+              "type": "string"
+            },
+            "currency": {
+              "col": "net_currency"
+            },
+            "entity_id": {
+              "args": [
+                {
+                  "col": "merchant_account"
+                },
+                {
+                  "lit": "^Platform([A-Z0-9]+)",
+                  "type": "string"
+                },
+                {
+                  "lit": 1,
+                  "type": "bigint"
+                }
+              ],
+              "fn": "regex_extract"
+            }
+          },
+          "source_id": "adyen_payouts"
+        }
+      ],
+      "type_id": "sample_psp_payout"
+    }
+  },
+  "resource": "event-types"
+}

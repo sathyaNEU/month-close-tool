@@ -1,0 +1,119 @@
+{
+  "$defs": {
+    "JournalLineIn": {
+      "additionalProperties": false,
+      "properties": {
+        "account": {
+          "pattern": "^[A-Za-z0-9._-]{1,32}$",
+          "title": "Account",
+          "type": "string"
+        },
+        "amount_minor": {
+          "exclusiveMinimum": 0,
+          "maximum": 1000000000000000,
+          "title": "Amount Minor",
+          "type": "integer"
+        },
+        "description": {
+          "default": "",
+          "maxLength": 500,
+          "title": "Description",
+          "type": "string"
+        },
+        "dimensions": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "default": {},
+          "title": "Dimensions",
+          "type": "object"
+        },
+        "side": {
+          "enum": [
+            "DR",
+            "CR"
+          ],
+          "title": "Side",
+          "type": "string"
+        },
+        "values": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "default": {},
+          "title": "Values",
+          "type": "object"
+        }
+      },
+      "required": [
+        "account",
+        "side",
+        "amount_minor"
+      ],
+      "title": "JournalLineIn",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "accounting_date": {
+      "format": "date",
+      "title": "Accounting Date",
+      "type": "string"
+    },
+    "currency": {
+      "anyOf": [
+        {
+          "pattern": "^[A-Z]{3}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Currency"
+    },
+    "description": {
+      "default": "",
+      "maxLength": 1000,
+      "title": "Description",
+      "type": "string"
+    },
+    "entity_id": {
+      "pattern": "^[A-Z0-9]{2,16}$",
+      "title": "Entity Id",
+      "type": "string"
+    },
+    "header": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "default": {},
+      "title": "Header",
+      "type": "object"
+    },
+    "lines": {
+      "items": {
+        "$ref": "#/$defs/JournalLineIn"
+      },
+      "maxItems": 10000,
+      "minItems": 1,
+      "title": "Lines",
+      "type": "array"
+    },
+    "template_id": {
+      "pattern": "^[a-z][a-z0-9_]{2,63}$",
+      "title": "Template Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "entity_id",
+    "template_id",
+    "accounting_date",
+    "lines"
+  ],
+  "title": "JournalDraft",
+  "type": "object"
+}

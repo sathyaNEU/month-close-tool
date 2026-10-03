@@ -1,0 +1,136 @@
+{
+  "$defs": {
+    "Account": {
+      "additionalProperties": false,
+      "properties": {
+        "account_type": {
+          "enum": [
+            "asset",
+            "liability",
+            "equity",
+            "revenue",
+            "expense"
+          ],
+          "title": "Account Type",
+          "type": "string"
+        },
+        "code": {
+          "pattern": "^[A-Za-z0-9._-]{1,32}$",
+          "title": "Code",
+          "type": "string"
+        },
+        "currency": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Z]{3}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Currency"
+        },
+        "description": {
+          "default": "",
+          "maxLength": 500,
+          "title": "Description",
+          "type": "string"
+        },
+        "entities": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Entities",
+          "type": "array"
+        },
+        "name": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "normal_balance": {
+          "enum": [
+            "debit",
+            "credit"
+          ],
+          "title": "Normal Balance",
+          "type": "string"
+        },
+        "parent": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Za-z0-9._-]{1,32}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Parent"
+        },
+        "postable": {
+          "default": true,
+          "title": "Postable",
+          "type": "boolean"
+        },
+        "status": {
+          "default": "active",
+          "enum": [
+            "active",
+            "inactive"
+          ],
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "code",
+        "name",
+        "account_type",
+        "normal_balance"
+      ],
+      "title": "Account",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "accounts": {
+      "items": {
+        "$ref": "#/$defs/Account"
+      },
+      "maxItems": 20000,
+      "minItems": 1,
+      "title": "Accounts",
+      "type": "array"
+    },
+    "chart_id": {
+      "pattern": "^[a-z][a-z0-9_]{2,63}$",
+      "title": "Chart Id",
+      "type": "string"
+    },
+    "fx_rounding_account": {
+      "pattern": "^[A-Za-z0-9._-]{1,32}$",
+      "title": "Fx Rounding Account",
+      "type": "string"
+    },
+    "suspense_account": {
+      "pattern": "^[A-Za-z0-9._-]{1,32}$",
+      "title": "Suspense Account",
+      "type": "string"
+    }
+  },
+  "required": [
+    "chart_id",
+    "accounts",
+    "suspense_account",
+    "fx_rounding_account"
+  ],
+  "title": "ChartOfAccounts",
+  "type": "object"
+}

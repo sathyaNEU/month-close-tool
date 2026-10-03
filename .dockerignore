@@ -1,0 +1,6 @@
+# Images are built only from the dist artifacts (make app-dist / make spark-dist) and the jar lock.
+*
+!dist/app/**
+!dist/spark/**
+!tools/fetch_jars.py
+!tools/jars.lock

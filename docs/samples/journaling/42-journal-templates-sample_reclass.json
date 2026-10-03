@@ -1,0 +1,43 @@
+{
+  "_sample": "SAMPLE configuration for testing, not your company's accounting (docs/domain/sample-journal-rules.md)",
+  "body": {
+    "effective_from": "2026-06-01",
+    "spec": {
+      "allowed_accounts": {
+        "account_types": [
+          "expense",
+          "revenue"
+        ],
+        "codes": [],
+        "ranges": []
+      },
+      "attachment_required_from_minor": null,
+      "auto_reverse": false,
+      "currencies": [],
+      "description": "Moves an amount between expense or revenue accounts, with a reason on every line.",
+      "header_columns": [],
+      "line_columns": [
+        {
+          "allowed_values": [
+            "misposting",
+            "policy_change",
+            "other"
+          ],
+          "column_id": "reason_code",
+          "data_type": "string",
+          "default": null,
+          "label": "Reason",
+          "max_length": 500,
+          "non_negative": false,
+          "read_only": false,
+          "required": true
+        }
+      ],
+      "max_lines": 500,
+      "min_description_length": 10,
+      "name": "Expense or revenue reclass",
+      "template_id": "sample_reclass"
+    }
+  },
+  "resource": "journal-templates"
+}

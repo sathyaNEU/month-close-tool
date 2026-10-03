@@ -1,0 +1,57 @@
+{
+  "_sample": "SAMPLE configuration for testing, not your company's accounting (docs/domain/sample-journal-rules.md)",
+  "body": {
+    "effective_from": "2026-06-01",
+    "spec": {
+      "amounts": [
+        "fee"
+      ],
+      "attributes": [
+        "psp"
+      ],
+      "description": "A payment provider's monthly fee invoice (fees not taken out of the settlement)",
+      "event_type": "PSP_FEE_BILLED",
+      "identities": [],
+      "sources": [
+        {
+          "filter": null,
+          "landing_table": "landing.psp_fee_invoices",
+          "lookups": [],
+          "mapping": {
+            "accounting_date": {
+              "col": "invoice_date"
+            },
+            "amount_fee": {
+              "col": "amount_minor"
+            },
+            "attr_psp": {
+              "col": "psp"
+            },
+            "currency": {
+              "col": "currency"
+            },
+            "entity_id": {
+              "args": [
+                {
+                  "col": "account_id"
+                },
+                {
+                  "lit": "^acct_1Platform([A-Z0-9]+)",
+                  "type": "string"
+                },
+                {
+                  "lit": 1,
+                  "type": "bigint"
+                }
+              ],
+              "fn": "regex_extract"
+            }
+          },
+          "source_id": "fee_invoices"
+        }
+      ],
+      "type_id": "sample_psp_fee_billed"
+    }
+  },
+  "resource": "event-types"
+}

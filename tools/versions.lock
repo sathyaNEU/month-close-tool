@@ -1,0 +1,49 @@
+# Pinned toolchain and platform versions for the close platform.
+# Checked against primary sources on 2026-09-26 (Databricks release notes, Apache, PyPI, GitHub,
+# Docker Hub). `make check-versions` verifies this machine against the file.
+
+[toolchain]
+uv_min = "0.12.0"
+java_major = 21
+docker_server_min = "29.0.0"
+python = "3.12"
+
+# The Databricks Runtime we mirror locally (DBR 18 LTS, supported until Jun 2029).
+[databricks_runtime]
+name = "18 LTS"
+spark = "4.1.0"
+delta = "4.2.0 (Databricks build number, not OSS delta-spark)"
+python = "3.12.3"
+java = "Zulu 21"
+pydantic = "2.10.6"
+pandas = "2.2.3"
+pyarrow = "21.0.0"
+numpy = "2.1.3"
+
+# Installed in the uv environment (checked with importlib.metadata).
+[python_packages]
+pyspark = "4.1.3"
+delta-spark = "4.4.0"
+pandas = "2.2.3"
+pyarrow = "21.0.0"
+numpy = "2.1.3"
+pydantic = "2.10.6"
+
+[jars]
+delta = "io.delta:delta-spark_4.1_2.13:4.4.0"
+hadoop_aws = "org.apache.hadoop:hadoop-aws:3.4.2"   # must equal pyspark's bundled hadoop-client-api version
+
+[images]
+# Every image referenced by a compose*.yaml file, a deploy/docker/*/Dockerfile or a Makefile *_IMAGE
+# variable must be one of these exact strings (tools/check_versions.py enforces it). Project images
+# (*:local) are built here.
+seaweedfs = "chrislusf/seaweedfs:4.47"
+postgres = "postgres:17.11"
+python_base = "python:3.12.14-slim-trixie@sha256:f77ac9e44ae96ef2c90b8053ea08c31f8be030f824196b0ae4db6d462c84e51f"
+uv = "ghcr.io/astral-sh/uv:0.10.2@sha256:94a23af2d50e97b87b522d3cea24aaf8a1faedec1344c952767434f69585cbf9"
+caddy = "caddy:2.11.4-alpine@sha256:6aeddd44c3078b0f9a35206472a11420648a79c184603ef95957d0a20044cb2b"
+# Tool images run through Docker by make targets (security, lint-workflows, scan) and the +uc spike.
+gitleaks = "ghcr.io/gitleaks/gitleaks:v8.30.1@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f"
+actionlint = "rhysd/actionlint:1.7.12@sha256:b1934ee5f1c509618f2508e6eb47ee0d3520686341fec936f3b79331f9315667"
+trivy = "aquasec/trivy:0.74.0@sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018a9d9ad61caf87187c1969"
+unitycatalog = "unitycatalog/unitycatalog:v0.6.0@sha256:606349a178d99c3b42d9c9c8cfea72f04efb3cfc350ee89eec45368b96e50086"

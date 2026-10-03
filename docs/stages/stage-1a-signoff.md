@@ -1,0 +1,7 @@
+# Stage 1a sign-off
+
+Stage 1a was signed off on 2026-09-27. The gate result is in [stage-1a-report.md](stage-1a-report.md) (PASS, 17 of 17 criteria, with the Stage 0 steps re-run as regression).
+
+The sign-off accepted the deviations listed in the report's summary: the cold bring-up is measured with `--no-cache` instead of pruning Docker's shared build cache, the `faults` container is the named exception to "the S3 writer key only in `jobs`", the app starts with `python -m close_app`, containers use Docker's built-in init, the relay searches for a run on any redelivery, the memory budget is judged on container peaks with `oom_kill = 0` as the binding signal, job permissions land in Stage 10, and the jar pins live in `tools/jars.lock`. It also accepted the two design records written during the stage, [ADR-0007](../adr/0007-orchestration-without-temporal.md) (orchestration without Temporal, amending ADR-0006) and [ADR-0008](../adr/0008-jobs-api-emulator-parity.md) (the Jobs API emulator).
+
+The user also decided the two open questions from the report. `httpx2` is added as a development dependency for Starlette's test client, and `kind`, `helm` and `kubectl` are removed from the toolchain files (Brewfile, `tools/versions.lock` and the version check) without uninstalling anything. D19 (the GL book of record) stays open until the Stage 5 gate. Stage 1b starts next, as specified in [stage-1-spec.md](stage-1-spec.md).

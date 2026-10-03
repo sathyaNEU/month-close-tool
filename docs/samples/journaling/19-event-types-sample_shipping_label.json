@@ -1,0 +1,47 @@
+{
+  "_sample": "SAMPLE configuration for testing, not your company's accounting (docs/domain/sample-journal-rules.md)",
+  "body": {
+    "effective_from": "2026-06-01",
+    "spec": {
+      "amounts": [
+        "amount"
+      ],
+      "attributes": [
+        "carrier"
+      ],
+      "description": "A shipping label bought at a quoted price",
+      "event_type": "SHIPPING_LABEL",
+      "identities": [],
+      "sources": [
+        {
+          "filter": null,
+          "landing_table": "landing.shipping_labels",
+          "lookups": [],
+          "mapping": {
+            "accounting_date": {
+              "col": "ship_date"
+            },
+            "amount_amount": {
+              "col": "quoted_minor"
+            },
+            "attr_carrier": {
+              "col": "carrier"
+            },
+            "currency": {
+              "col": "currency"
+            },
+            "entity_id": {
+              "col": "entity_id"
+            },
+            "order_id": {
+              "col": "order_id"
+            }
+          },
+          "source_id": "shipping_labels"
+        }
+      ],
+      "type_id": "sample_shipping_label"
+    }
+  },
+  "resource": "event-types"
+}

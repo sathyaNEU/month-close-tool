@@ -1,0 +1,234 @@
+# Local development stack shaped like production (ADR-0006):
+#   devproxy -> Databricks Apps proxy, app -> Databricks App, postgres -> Lakebase,
+#   jobs -> Lakeflow Jobs (Jobs API 2.2 emulator), seaweedfs -> S3.
+# Only devproxy is published (127.0.0.1). Every service gets only its own credentials (.local/secrets):
+# the S3 writer key goes to `jobs` alone (plus the opt-in `faults` zombie), the reader key to `spark-connect`
+# alone, and the app has no S3 keys at all.
+# Images come from the dist artifacts: `make images` (or `make up`, which builds them first).
+name: close
+
+x-app: &app
+  image: close-app:local
+  build:
+    context: .
+    dockerfile: deploy/docker/close-app/Dockerfile
+  env_file:
+    - .local/secrets/pg-app.env
+    - .local/secrets/jobs-client.env
+    - .local/secrets/app.env
+  environment: &app-env
+    CLOSE_ENV: local
+    CLOSE_JOB_ID_SMOKE: "1001"  # in production, the app's job resource (valueFrom in app.yaml)
+    CLOSE_JOB_ID_POST_JOURNALS: "1004"  # Stage 7b: the posting job
+    CLOSE_JOB_ID_JOURNAL_REF: "1005"  # Stage 8a: the journaling stand-in
+    DATABRICKS_APP_PORT: "8000"
+    CLOSE_SPARK_REMOTE: sc://spark-connect:15002  # the read path (Stage 1b)
+  depends_on:
+    migrate:
+      condition: service_completed_successfully
+    jobs:
+      condition: service_healthy
+    spark-connect:
+      condition: service_healthy
+  healthcheck:
+    # Readiness: schema at head and the Jobs API reachable with the app's credentials.
+    test: ["CMD", "python", "-c", "import urllib.request as u; u.urlopen('http://127.0.0.1:8000/readyz', timeout=4)"]
+    interval: 3s
+    timeout: 5s
+    retries: 60
+  stop_grace_period: 25s
+  mem_limit: 512m
+  networks: [backend]
+
+services:
+  postgres:
+    image: postgres:17.11
+    env_file: .local/secrets/postgres.env
+    command: ["postgres", "-c", "shared_buffers=96MB", "-c", "max_connections=60", "-c", "log_min_duration_statement=1000"]
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./deploy/postgres/initdb:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d close"]
+      interval: 2s
+      timeout: 3s
+      retries: 60
+    mem_limit: 384m
+    networks: [backend]
+
+  seaweedfs:
+    image: chrislusf/seaweedfs:4.47
+    command: >-
+      server -dir=/data -ip.bind=0.0.0.0
+      -master.volumeSizeLimitMB=256 -volume.max=100
+      -s3 -s3.port=8333 -s3.config=/etc/seaweedfs/s3.json
+    volumes:
+      - ./.local/secrets/seaweedfs-s3.json:/etc/seaweedfs/s3.json:ro
+      - lakedata:/data
+    healthcheck:
+      # Ready only when the master answers AND the S3 gateway returns any HTTP response (403 without auth).
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:9333/cluster/status && wget -S -O /dev/null http://127.0.0.1:8333/ 2>&1 | grep -q 'HTTP/'"]
+      interval: 3s
+      timeout: 3s
+      retries: 40
+    environment:
+      # A soft ceiling for the Go runtime, so the collector returns transfer buffers instead of letting the heap
+      # grow into the limit. Measured under the read benchmark (Stage 2b, first task): peak process memory
+      # 614-633 MiB without it, 411 MiB with it; the lake itself was only ~50 MB, so the growth was buffers.
+      GOMEMLIMIT: "512MiB"
+    mem_limit: 768m
+    networks: [backend]
+
+  lake-init:
+    image: chrislusf/seaweedfs:4.47
+    depends_on:
+      seaweedfs:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "-c"]
+    command: ["echo 's3.bucket.create -name close-lake' | weed shell -master=seaweedfs:9333 && echo bucket-ready"]
+    restart: "no"
+    networks: [backend]
+
+  pg-roles:
+    # Deploy step: the posting job's read-only role (Stage 7b), created or updated on every `up`, because the
+    # initdb scripts only run on an empty data volume. Runs the same idempotent script as the superuser.
+    image: postgres:17.11
+    env_file: .local/secrets/pg-roles.env  # the superuser and the reader's password only, not the other roles'
+    entrypoint: ["sh", "-c", "PGPASSWORD=\"$$POSTGRES_PASSWORD\" sh /scripts/20-ledger-reader.sh"]
+    volumes:
+      - ./deploy/postgres/initdb:/scripts:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+    mem_limit: 64m
+    networks: [backend]
+
+  migrate:
+    # Deploy step: Alembic as close_migrator (the app role cannot change the schema), then the dev seed.
+    image: close-app:local
+    build:
+      context: .
+      dockerfile: deploy/docker/close-app/Dockerfile
+    env_file: .local/secrets/pg-migrator.env
+    environment:
+      CLOSE_ENV: local
+    command: ["sh", "-c", "alembic -c migrations/alembic.ini upgrade head && python -m close_app.devseed"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      pg-roles:
+        condition: service_completed_successfully
+    restart: "no"
+    mem_limit: 256m
+    networks: [backend]
+
+  jobs:
+    # Lakeflow Jobs stand-in: Jobs API 2.2 emulator, one spark-submit at a time (1g driver).
+    image: close-spark:local
+    build:
+      context: .
+      dockerfile: deploy/docker/close-spark/Dockerfile
+    env_file:
+      - .local/secrets/jobs-server.env
+      - .local/secrets/s3-writer.env
+      - .local/secrets/pg-ledger-reader.env  # Stage 7b: the posting job reads one view, nothing else
+    environment:
+      EMULATOR_JOB_IDS: smoke=1001,ddl_apply=1002,datagen=1003,post_journals=1004,journal_ref=1005
+      EMULATOR_DRIVER_MEMORY: 1g
+      MALLOC_ARENA_MAX: "2"  # inherited by every spark-submit; the same measured fix as spark-connect
+    init: true  # reaps spark-submit process trees
+    volumes:
+      - jobsstate:/var/lib/close-jobs
+      - ./.local/faults:/faults  # pause-point files (CLOSE_FAULTS) created by the host tests
+    depends_on:
+      lake-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request as u; u.urlopen('http://127.0.0.1:8080/healthz', timeout=2)"]
+      interval: 3s
+      timeout: 3s
+      retries: 40
+    stop_grace_period: 30s
+    mem_limit: 3072m  # Stage 2b: the medium generator peaks at ~2.3 GiB (driver JVM ~1.6 GiB + Python ~0.6 GiB)
+    networks: [backend]
+
+  spark-connect:
+    # Databricks Spark Connect stand-in for the read path. It holds the reader-only S3 key (a write
+    # through it fails with 403) and has no authentication, so it is never published.
+    image: close-spark:local
+    env_file: .local/secrets/s3-reader.env
+    command: ["python", "-m", "close_jobs_emulator.connect_server"]
+    init: true
+    depends_on:
+      lake-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "python", "-c", "import socket; socket.create_connection(('127.0.0.1', 15002), 2)"]
+      interval: 3s
+      timeout: 3s
+      retries: 60
+    environment:
+      # Caps glibc's per-thread malloc arenas. Measured with the full read benchmark (100k, 1M rows, 4 clients):
+      # together with -XX:ActiveProcessorCount=2 (connect_server.py) the JVM's peak process memory drops from
+      # ~1.85 GiB to ~1.65 GiB, which leaves ~20% headroom under the limit (Stage 2a, first task).
+      MALLOC_ARENA_MAX: "2"
+    stop_grace_period: 20s
+    mem_limit: 2048m  # 1 GiB heap + off-heap; peak process memory ~1.65 GiB with the settings above
+    networks: [backend]
+
+  app:
+    <<: *app
+    environment:
+      <<: *app-env
+      CLOSE_INSTANCE_ID: app1
+
+  app2:
+    # Second instance (profile ha): scheduler hand-over and exactly-once ticks across instances.
+    <<: *app
+    profiles: ["ha"]
+    environment:
+      <<: *app-env
+      CLOSE_INSTANCE_ID: app2
+
+  devproxy:
+    # Databricks Apps proxy stand-in, the only published service. Log in: /__dev/login/<alice|bob|carol|dave>.
+    image: caddy:2.11.4-alpine@sha256:6aeddd44c3078b0f9a35206472a11420648a79c184603ef95957d0a20044cb2b
+    volumes:
+      - ./deploy/devproxy/Caddyfile:/etc/caddy/Caddyfile:ro
+    ports:
+      - "127.0.0.1:8088:8088"
+    depends_on:
+      app:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8088/__dev/health"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    mem_limit: 64m
+    networks: [backend]
+
+  faults:
+    # Opt-in (profile faults): a zombie writer for the fencing tests, exec'd by the e2e suite. It holds
+    # the S3 writer key on purpose, because a zombie is a writer; it is the only other holder.
+    image: close-spark:local
+    profiles: ["faults"]
+    env_file: .local/secrets/s3-writer.env
+    entrypoint: ["sleep", "infinity"]
+    init: true
+    volumes:
+      - ./.local/faults:/faults
+    depends_on:
+      jobs:
+        condition: service_healthy
+    mem_limit: 1792m
+    networks: [backend]
+
+volumes:
+  pgdata:
+  lakedata:
+  jobsstate:
+
+networks:
+  backend: {}

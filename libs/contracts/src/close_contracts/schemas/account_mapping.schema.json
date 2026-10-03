@@ -1,0 +1,82 @@
+{
+  "$defs": {
+    "MappingRow": {
+      "additionalProperties": false,
+      "properties": {
+        "account": {
+          "pattern": "^[A-Za-z0-9._-]{1,32}$",
+          "title": "Account",
+          "type": "string"
+        },
+        "match": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 6,
+          "minItems": 1,
+          "title": "Match",
+          "type": "array"
+        }
+      },
+      "required": [
+        "match",
+        "account"
+      ],
+      "title": "MappingRow",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "default_account": {
+      "anyOf": [
+        {
+          "pattern": "^[A-Za-z0-9._-]{1,32}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Default Account"
+    },
+    "description": {
+      "maxLength": 500,
+      "minLength": 1,
+      "title": "Description",
+      "type": "string"
+    },
+    "keys": {
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 6,
+      "minItems": 1,
+      "title": "Keys",
+      "type": "array"
+    },
+    "mapping_id": {
+      "pattern": "^[a-z][a-z0-9_]{2,63}$",
+      "title": "Mapping Id",
+      "type": "string"
+    },
+    "rows": {
+      "items": {
+        "$ref": "#/$defs/MappingRow"
+      },
+      "maxItems": 5000,
+      "minItems": 1,
+      "title": "Rows",
+      "type": "array"
+    }
+  },
+  "required": [
+    "mapping_id",
+    "description",
+    "keys",
+    "rows"
+  ],
+  "title": "AccountMapping",
+  "type": "object"
+}

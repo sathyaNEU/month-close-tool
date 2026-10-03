@@ -1,0 +1,243 @@
+{
+  "$defs": {
+    "AccountingPolicy": {
+      "additionalProperties": false,
+      "properties": {
+        "presentation": {
+          "$ref": "#/$defs/Presentation"
+        },
+        "programs": {
+          "items": {
+            "$ref": "#/$defs/ProgramPolicy"
+          },
+          "title": "Programs",
+          "type": "array"
+        }
+      },
+      "required": [
+        "programs",
+        "presentation"
+      ],
+      "title": "AccountingPolicy",
+      "type": "object"
+    },
+    "ConfigKind": {
+      "enum": [
+        "data_source",
+        "match_set",
+        "accounting_policy",
+        "event_type",
+        "auto_journal_definition",
+        "account_mapping",
+        "chart_of_accounts",
+        "dimension_set",
+        "entity_set",
+        "journal_template",
+        "approval_matrix",
+        "recurring_journal",
+        "close_checklist",
+        "flux_rules"
+      ],
+      "title": "ConfigKind",
+      "type": "string"
+    },
+    "ConfigStatus": {
+      "enum": [
+        "draft",
+        "submitted",
+        "approved",
+        "active",
+        "retired"
+      ],
+      "title": "ConfigStatus",
+      "type": "string"
+    },
+    "IncentiveTreatment": {
+      "enum": [
+        "contra_revenue",
+        "contra_up_to_cumulative_then_marketing",
+        "marketing"
+      ],
+      "title": "IncentiveTreatment",
+      "type": "string"
+    },
+    "Presentation": {
+      "additionalProperties": false,
+      "properties": {
+        "chargebacks": {
+          "enum": [
+            "reserve",
+            "transaction_loss"
+          ],
+          "title": "Chargebacks",
+          "type": "string"
+        },
+        "processing_fees": {
+          "enum": [
+            "cost_of_revenue",
+            "sga"
+          ],
+          "title": "Processing Fees",
+          "type": "string"
+        },
+        "psp_receivable": {
+          "enum": [
+            "cash_equivalent",
+            "accounts_receivable"
+          ],
+          "title": "Psp Receivable",
+          "type": "string"
+        }
+      },
+      "required": [
+        "psp_receivable",
+        "processing_fees",
+        "chargebacks"
+      ],
+      "title": "Presentation",
+      "type": "object"
+    },
+    "Program": {
+      "enum": [
+        "verified_marketplace",
+        "direct_ship",
+        "consignment",
+        "listings"
+      ],
+      "title": "Program",
+      "type": "string"
+    },
+    "ProgramModel": {
+      "enum": [
+        "agent",
+        "owned_inventory"
+      ],
+      "title": "ProgramModel",
+      "type": "string"
+    },
+    "ProgramPolicy": {
+      "additionalProperties": false,
+      "properties": {
+        "incentives": {
+          "$ref": "#/$defs/IncentiveTreatment"
+        },
+        "model": {
+          "$ref": "#/$defs/ProgramModel"
+        },
+        "program": {
+          "$ref": "#/$defs/Program"
+        },
+        "shipping": {
+          "$ref": "#/$defs/ShippingTreatment"
+        },
+        "trigger": {
+          "$ref": "#/$defs/Trigger"
+        }
+      },
+      "required": [
+        "program",
+        "trigger",
+        "model",
+        "shipping",
+        "incentives"
+      ],
+      "title": "ProgramPolicy",
+      "type": "object"
+    },
+    "ShippingTreatment": {
+      "enum": [
+        "net_as_agent",
+        "gross"
+      ],
+      "title": "ShippingTreatment",
+      "type": "string"
+    },
+    "Trigger": {
+      "enum": [
+        "payment",
+        "verification_passed",
+        "shipped",
+        "delivered",
+        "return_window_closed"
+      ],
+      "title": "Trigger",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "approver": {
+      "anyOf": [
+        {
+          "pattern": "^[A-Za-z0-9._@-]{1,128}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Approver"
+    },
+    "author": {
+      "pattern": "^[A-Za-z0-9._@-]{1,128}$",
+      "title": "Author",
+      "type": "string"
+    },
+    "config_id": {
+      "pattern": "^[a-z][a-z0-9_]{2,63}$",
+      "title": "Config Id",
+      "type": "string"
+    },
+    "content_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Content Hash",
+      "type": "string"
+    },
+    "effective_from": {
+      "format": "date",
+      "title": "Effective From",
+      "type": "string"
+    },
+    "effective_to": {
+      "anyOf": [
+        {
+          "format": "date",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Effective To"
+    },
+    "kind": {
+      "$ref": "#/$defs/ConfigKind"
+    },
+    "spec": {
+      "$ref": "#/$defs/AccountingPolicy"
+    },
+    "status": {
+      "$ref": "#/$defs/ConfigStatus"
+    },
+    "version": {
+      "maximum": 2147483647,
+      "minimum": 1,
+      "title": "Version",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "kind",
+    "config_id",
+    "version",
+    "status",
+    "effective_from",
+    "author",
+    "content_hash",
+    "spec"
+  ],
+  "title": "Envelope[AccountingPolicy]",
+  "type": "object"
+}

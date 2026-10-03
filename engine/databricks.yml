@@ -1,0 +1,272 @@
+# Declarative Automation Bundle for the close engine (Databricks CLI `databricks bundle`, Stage 10).
+# The local Jobs API emulator reads the SAME job definitions (strict subset parser), so parameters and
+# task arguments cannot drift between local runs and Lakeflow Jobs. Cluster/environment settings per
+# workspace are added in Stage 10 and are ignored by the emulator.
+bundle:
+  name: close-engine
+
+variables:
+  lake_root:
+    description: Root URI of the platform lake (engine tables).
+    default: s3a://close-lake/local
+
+resources:
+  jobs:
+    smoke:
+      name: close-smoke
+      description: End-to-end probe of the platform (fence, commit metadata, per-entity digests).
+      max_concurrent_runs: 1
+      timeout_seconds: 900
+      queue:
+        enabled: true
+      parameters:
+        - name: run_id
+          default: ""
+        - name: attempt
+          default: "1"
+        - name: lease_resource
+          default: "smoke:default"
+        - name: fencing_token
+          default: "1"
+        - name: requested_at
+          default: "2000-01-01T00:00:00+00:00"
+        - name: request_id
+          default: "none"
+        - name: root_uri
+          default: ${var.lake_root}
+        - name: rows
+          default: "1000"
+      tasks:
+        - task_key: main
+          max_retries: 0   # retries belong to the control plane (new attempt, new fencing token)
+          python_wheel_task:
+            package_name: close_engine
+            entry_point: close-job
+            parameters:
+              - smoke
+              - --run-id
+              - "{{job.parameters.run_id}}"
+              - --attempt
+              - "{{job.parameters.attempt}}"
+              - --lease-resource
+              - "{{job.parameters.lease_resource}}"
+              - --fencing-token
+              - "{{job.parameters.fencing_token}}"
+              - --requested-at
+              - "{{job.parameters.requested_at}}"
+              - --request-id
+              - "{{job.parameters.request_id}}"
+              - --root-uri
+              - "{{job.parameters.root_uri}}"
+              - --rows
+              - "{{job.parameters.rows}}"
+
+    post_journals:
+      name: close-post-journals
+      description: Posts the journals frozen into a posting run to the Delta ledger, exactly once (Stage 7b).
+      max_concurrent_runs: 1
+      timeout_seconds: 900
+      queue:
+        enabled: true
+      parameters:
+        - name: run_id
+          default: ""
+        - name: attempt
+          default: "1"
+        - name: lease_resource
+          default: "ledger:default"
+        - name: fencing_token
+          default: "1"
+        - name: requested_at
+          default: "2000-01-01T00:00:00+00:00"
+        - name: request_id
+          default: "none"
+        - name: root_uri
+          default: ${var.lake_root}
+        - name: entity_id
+          default: ""
+      tasks:
+        - task_key: main
+          max_retries: 0   # retries belong to the control plane (new attempt, new fencing token)
+          python_wheel_task:
+            package_name: close_engine
+            entry_point: close-job
+            parameters:
+              - post_journals
+              - --run-id
+              - "{{job.parameters.run_id}}"
+              - --attempt
+              - "{{job.parameters.attempt}}"
+              - --lease-resource
+              - "{{job.parameters.lease_resource}}"
+              - --fencing-token
+              - "{{job.parameters.fencing_token}}"
+              - --requested-at
+              - "{{job.parameters.requested_at}}"
+              - --request-id
+              - "{{job.parameters.request_id}}"
+              - --root-uri
+              - "{{job.parameters.root_uri}}"
+              - --entity-id
+              - "{{job.parameters.entity_id}}"
+
+    journal_ref:
+      name: close-journal-ref
+      description: >-
+        Sample stand-in for the Spark journaling job (Stage 8a): the reference engine's journals for one entity,
+        written to the Delta ledger. Sample volumes only; replaced by the Spark job when the rule compiler exists.
+      max_concurrent_runs: 1
+      timeout_seconds: 1800
+      queue:
+        enabled: true
+      parameters:
+        - name: run_id
+          default: ""
+        - name: attempt
+          default: "1"
+        - name: lease_resource
+          default: "ledger:default"
+        - name: fencing_token
+          default: "1"
+        - name: requested_at
+          default: "2000-01-01T00:00:00+00:00"
+        - name: request_id
+          default: "none"
+        - name: root_uri
+          default: ${var.lake_root}
+        - name: entity_id
+          default: ""
+        - name: snapshot_hash
+          default: ""
+        - name: pinned_inputs
+          default: ""
+      tasks:
+        - task_key: main
+          max_retries: 0   # retries belong to the control plane (new attempt, new fencing token)
+          python_wheel_task:
+            package_name: close_engine
+            entry_point: close-job
+            parameters:
+              - journal_ref
+              - --run-id
+              - "{{job.parameters.run_id}}"
+              - --attempt
+              - "{{job.parameters.attempt}}"
+              - --lease-resource
+              - "{{job.parameters.lease_resource}}"
+              - --fencing-token
+              - "{{job.parameters.fencing_token}}"
+              - --requested-at
+              - "{{job.parameters.requested_at}}"
+              - --request-id
+              - "{{job.parameters.request_id}}"
+              - --root-uri
+              - "{{job.parameters.root_uri}}"
+              - --entity-id
+              - "{{job.parameters.entity_id}}"
+              - --snapshot-hash
+              - "{{job.parameters.snapshot_hash}}"
+              - --pinned-inputs
+              - "{{job.parameters.pinned_inputs}}"
+
+    ddl_apply:
+      name: close-ddl-apply
+      description: Apply the packaged V### Delta migrations to the lake, each exactly once.
+      max_concurrent_runs: 1
+      timeout_seconds: 900
+      queue:
+        enabled: true
+      parameters:
+        - name: run_id
+          default: ""
+        - name: attempt
+          default: "1"
+        - name: lease_resource
+          default: "ddl:lake"
+        - name: fencing_token
+          default: "1"
+        - name: requested_at
+          default: "2000-01-01T00:00:00+00:00"
+        - name: request_id
+          default: "none"
+        - name: root_uri
+          default: ${var.lake_root}
+      tasks:
+        - task_key: main
+          max_retries: 0
+          python_wheel_task:
+            package_name: close_engine
+            entry_point: close-job
+            parameters:
+              - ddl_apply
+              - --run-id
+              - "{{job.parameters.run_id}}"
+              - --attempt
+              - "{{job.parameters.attempt}}"
+              - --lease-resource
+              - "{{job.parameters.lease_resource}}"
+              - --fencing-token
+              - "{{job.parameters.fencing_token}}"
+              - --requested-at
+              - "{{job.parameters.requested_at}}"
+              - --request-id
+              - "{{job.parameters.request_id}}"
+              - --root-uri
+              - "{{job.parameters.root_uri}}"
+
+    datagen:
+      name: close-datagen
+      description: Seeded synthetic marketplace data with an answer key (test and development workspaces only).
+      max_concurrent_runs: 1
+      timeout_seconds: 3600
+      queue:
+        enabled: true
+      parameters:
+        - name: run_id
+          default: ""
+        - name: attempt
+          default: "1"
+        - name: lease_resource
+          default: "datagen:lake"
+        - name: fencing_token
+          default: "1"
+        - name: requested_at
+          default: "2000-01-01T00:00:00+00:00"
+        - name: request_id
+          default: "none"
+        - name: root_uri
+          default: ${var.lake_root}
+        - name: profile
+          default: "small"
+        - name: seed
+          default: "11"
+      tasks:
+        - task_key: main
+          max_retries: 0
+          python_wheel_task:
+            package_name: close_datagen
+            entry_point: close-job
+            parameters:
+              - datagen
+              - --run-id
+              - "{{job.parameters.run_id}}"
+              - --attempt
+              - "{{job.parameters.attempt}}"
+              - --lease-resource
+              - "{{job.parameters.lease_resource}}"
+              - --fencing-token
+              - "{{job.parameters.fencing_token}}"
+              - --requested-at
+              - "{{job.parameters.requested_at}}"
+              - --request-id
+              - "{{job.parameters.request_id}}"
+              - --root-uri
+              - "{{job.parameters.root_uri}}"
+              - --profile
+              - "{{job.parameters.profile}}"
+              - --seed
+              - "{{job.parameters.seed}}"
+
+targets:
+  local:
+    default: true

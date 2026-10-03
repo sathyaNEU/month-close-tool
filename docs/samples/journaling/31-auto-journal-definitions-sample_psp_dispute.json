@@ -1,0 +1,213 @@
+{
+  "_sample": "SAMPLE configuration for testing, not your company's accounting (docs/domain/sample-journal-rules.md)",
+  "body": {
+    "effective_from": "2026-06-01",
+    "spec": {
+      "condition": null,
+      "definition_id": "sample_psp_dispute",
+      "event_types": [
+        "PSP_DISPUTE"
+      ],
+      "lines": [
+        {
+          "account": {
+            "account": null,
+            "keys": [
+              {
+                "col": "policy_chargebacks"
+              }
+            ],
+            "mapping": "sample_chargeback_account"
+          },
+          "amount": {
+            "col": "amount_amount"
+          },
+          "condition": {
+            "args": [
+              {
+                "col": "attr_direction"
+              },
+              {
+                "lit": "lost",
+                "type": "string"
+              }
+            ],
+            "fn": "eq"
+          },
+          "description": null,
+          "dimensions": {},
+          "line_id": "lost_loss",
+          "side": "DR"
+        },
+        {
+          "account": {
+            "account": "6050",
+            "keys": [],
+            "mapping": null
+          },
+          "amount": {
+            "col": "amount_fee"
+          },
+          "condition": {
+            "args": [
+              {
+                "col": "attr_direction"
+              },
+              {
+                "lit": "lost",
+                "type": "string"
+              }
+            ],
+            "fn": "eq"
+          },
+          "description": null,
+          "dimensions": {},
+          "line_id": "lost_fee",
+          "side": "DR"
+        },
+        {
+          "account": {
+            "account": null,
+            "keys": [
+              {
+                "col": "policy_psp_receivable"
+              }
+            ],
+            "mapping": "sample_psp_receivable_account"
+          },
+          "amount": {
+            "args": [
+              {
+                "col": "amount_amount"
+              },
+              {
+                "col": "amount_fee"
+              }
+            ],
+            "fn": "add"
+          },
+          "condition": {
+            "args": [
+              {
+                "col": "attr_direction"
+              },
+              {
+                "lit": "lost",
+                "type": "string"
+              }
+            ],
+            "fn": "eq"
+          },
+          "description": null,
+          "dimensions": {
+            "psp": {
+              "col": "attr_psp"
+            }
+          },
+          "line_id": "lost_psp",
+          "side": "CR"
+        },
+        {
+          "account": {
+            "account": null,
+            "keys": [
+              {
+                "col": "policy_psp_receivable"
+              }
+            ],
+            "mapping": "sample_psp_receivable_account"
+          },
+          "amount": {
+            "args": [
+              {
+                "col": "amount_amount"
+              },
+              {
+                "col": "amount_fee"
+              }
+            ],
+            "fn": "add"
+          },
+          "condition": {
+            "args": [
+              {
+                "col": "attr_direction"
+              },
+              {
+                "lit": "reversed",
+                "type": "string"
+              }
+            ],
+            "fn": "eq"
+          },
+          "description": null,
+          "dimensions": {
+            "psp": {
+              "col": "attr_psp"
+            }
+          },
+          "line_id": "won_psp",
+          "side": "DR"
+        },
+        {
+          "account": {
+            "account": null,
+            "keys": [
+              {
+                "col": "policy_chargebacks"
+              }
+            ],
+            "mapping": "sample_chargeback_account"
+          },
+          "amount": {
+            "col": "amount_amount"
+          },
+          "condition": {
+            "args": [
+              {
+                "col": "attr_direction"
+              },
+              {
+                "lit": "reversed",
+                "type": "string"
+              }
+            ],
+            "fn": "eq"
+          },
+          "description": null,
+          "dimensions": {},
+          "line_id": "won_loss",
+          "side": "CR"
+        },
+        {
+          "account": {
+            "account": "6050",
+            "keys": [],
+            "mapping": null
+          },
+          "amount": {
+            "col": "amount_fee"
+          },
+          "condition": {
+            "args": [
+              {
+                "col": "attr_direction"
+              },
+              {
+                "lit": "reversed",
+                "type": "string"
+              }
+            ],
+            "fn": "eq"
+          },
+          "description": null,
+          "dimensions": {},
+          "line_id": "won_fee",
+          "side": "CR"
+        }
+      ],
+      "name": "A chargeback debited by the provider, or credited back after a won dispute"
+    }
+  },
+  "resource": "auto-journal-definitions"
+}

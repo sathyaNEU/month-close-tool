@@ -1,0 +1,239 @@
+{
+  "_sample": "SAMPLE configuration for testing, not your company's accounting (docs/domain/sample-journal-rules.md)",
+  "body": {
+    "effective_from": "2026-06-01",
+    "spec": {
+      "amounts": [
+        "refund",
+        "card",
+        "store_credit",
+        "item_price",
+        "buyer_fee",
+        "shipping",
+        "tax",
+        "incentive",
+        "seller_fee",
+        "processing_fee"
+      ],
+      "attributes": [
+        "kind",
+        "method",
+        "psp"
+      ],
+      "description": "A refund to the buyer: cancellation, failed verification, partial refund or clawback",
+      "event_type": "ORDER_REFUND",
+      "identities": [
+        {
+          "expr": {
+            "args": [
+              {
+                "args": [
+                  {
+                    "col": "amount_card"
+                  },
+                  {
+                    "col": "amount_store_credit"
+                  }
+                ],
+                "fn": "add"
+              },
+              {
+                "args": [
+                  {
+                    "args": [
+                      {
+                        "args": [
+                          {
+                            "args": [
+                              {
+                                "col": "amount_item_price"
+                              },
+                              {
+                                "col": "amount_buyer_fee"
+                              }
+                            ],
+                            "fn": "add"
+                          },
+                          {
+                            "col": "amount_shipping"
+                          }
+                        ],
+                        "fn": "add"
+                      },
+                      {
+                        "col": "amount_tax"
+                      }
+                    ],
+                    "fn": "add"
+                  },
+                  {
+                    "col": "amount_incentive"
+                  }
+                ],
+                "fn": "sub"
+              }
+            ],
+            "fn": "eq"
+          },
+          "name": "payment"
+        },
+        {
+          "expr": {
+            "args": [
+              {
+                "args": [
+                  {
+                    "args": [
+                      {
+                        "col": "attr_kind"
+                      },
+                      {
+                        "lit": "cancel",
+                        "type": "string"
+                      }
+                    ],
+                    "fn": "ne"
+                  },
+                  {
+                    "args": [
+                      {
+                        "col": "attr_kind"
+                      },
+                      {
+                        "lit": "verification_failed",
+                        "type": "string"
+                      }
+                    ],
+                    "fn": "ne"
+                  }
+                ],
+                "fn": "and"
+              },
+              {
+                "args": [
+                  {
+                    "col": "amount_refund"
+                  },
+                  {
+                    "col": "amount_card"
+                  }
+                ],
+                "fn": "eq"
+              }
+            ],
+            "fn": "or"
+          },
+          "name": "full_refund_before_trigger"
+        }
+      ],
+      "sources": [
+        {
+          "filter": {
+            "args": [
+              {
+                "col": "event_type"
+              },
+              {
+                "lit": "refund_",
+                "type": "string"
+              }
+            ],
+            "fn": "starts_with"
+          },
+          "landing_table": "landing.order_events",
+          "lookups": [
+            {
+              "alias": "order",
+              "on": {
+                "order_id": {
+                  "col": "order_id"
+                }
+              },
+              "table": "landing.orders"
+            }
+          ],
+          "mapping": {
+            "accounting_date": {
+              "args": [
+                {
+                  "col": "occurred_at"
+                }
+              ],
+              "fn": "date_of"
+            },
+            "amount_buyer_fee": {
+              "col": "order_buyer_fee_minor"
+            },
+            "amount_card": {
+              "col": "order_card_amount_minor"
+            },
+            "amount_incentive": {
+              "col": "order_incentive_minor"
+            },
+            "amount_item_price": {
+              "col": "order_item_price_minor"
+            },
+            "amount_processing_fee": {
+              "col": "order_seller_processing_fee_minor"
+            },
+            "amount_refund": {
+              "col": "amount_minor"
+            },
+            "amount_seller_fee": {
+              "col": "order_seller_fee_minor"
+            },
+            "amount_shipping": {
+              "col": "order_shipping_minor"
+            },
+            "amount_store_credit": {
+              "col": "order_store_credit_minor"
+            },
+            "amount_tax": {
+              "col": "order_tax_minor"
+            },
+            "attr_kind": {
+              "args": [
+                {
+                  "col": "event_type"
+                },
+                {
+                  "lit": 8,
+                  "type": "bigint"
+                },
+                {
+                  "lit": 64,
+                  "type": "bigint"
+                }
+              ],
+              "fn": "substring"
+            },
+            "attr_method": {
+              "col": "refund_method"
+            },
+            "attr_psp": {
+              "col": "order_psp"
+            },
+            "currency": {
+              "col": "order_currency"
+            },
+            "entity_id": {
+              "col": "entity_id"
+            },
+            "order_id": {
+              "col": "order_id"
+            },
+            "program": {
+              "col": "order_program"
+            },
+            "seller_id": {
+              "col": "order_seller_id"
+            }
+          },
+          "source_id": "order_events"
+        }
+      ],
+      "type_id": "sample_order_refund"
+    }
+  },
+  "resource": "event-types"
+}

@@ -1,0 +1,23 @@
+{
+  "_sample": "SAMPLE configuration for testing, not your company's accounting (docs/domain/sample-journal-rules.md)",
+  "body": {
+    "effective_from": "2026-06-01",
+    "spec": {
+      "default_account": "5020",
+      "description": "Carrier invoice lines: transportation clears the label accrual, anything else is extra shipping cost",
+      "keys": [
+        "charge type"
+      ],
+      "mapping_id": "sample_carrier_charge_account",
+      "rows": [
+        {
+          "account": "2410",
+          "match": [
+            "transportation"
+          ]
+        }
+      ]
+    }
+  },
+  "resource": "account-mappings"
+}

@@ -1,0 +1,76 @@
+{
+  "_sample": "SAMPLE configuration for testing, not your company's accounting (docs/domain/sample-journal-rules.md)",
+  "body": {
+    "effective_from": "2026-06-01",
+    "spec": {
+      "bypass": {
+        "recurring": true,
+        "reversals": true,
+        "up_to_minor": {
+          "EUR": 500000,
+          "GBP": 400000,
+          "USD": 500000
+        }
+      },
+      "matrix_id": "sample_approval_matrix",
+      "reminders": {
+        "escalate_after": 2,
+        "first_after_hours": 24,
+        "repeat_every_hours": 24
+      },
+      "risk": {
+        "infrequent_preparer_below": 3,
+        "infrequent_preparer_days": 90,
+        "level_2_from": 40,
+        "level_3_from": 70,
+        "period_end_days": 3,
+        "round_amount_minor": 100000,
+        "seldom_used_days": 90,
+        "sensitive_accounts": [
+          "1010",
+          "4010",
+          "4030",
+          "4050"
+        ],
+        "thin_description_below": 20,
+        "version": 1,
+        "weights": {
+          "infrequent_preparer": 15,
+          "period_end_thin_description": 25,
+          "round_amount": 10,
+          "seldom_used_account": 20,
+          "sensitive_account": 20
+        }
+      },
+      "rules": [
+        {
+          "accounts": [
+            "1010"
+          ],
+          "entities": [],
+          "min_levels": 2,
+          "rule_id": "cash_needs_two",
+          "templates": []
+        }
+      ],
+      "thresholds": [
+        {
+          "currency": "USD",
+          "level_2_from_minor": 1000000,
+          "level_3_from_minor": 10000000
+        },
+        {
+          "currency": "EUR",
+          "level_2_from_minor": 1000000,
+          "level_3_from_minor": 10000000
+        },
+        {
+          "currency": "GBP",
+          "level_2_from_minor": 800000,
+          "level_3_from_minor": 8000000
+        }
+      ]
+    }
+  },
+  "resource": "approval-matrices"
+}

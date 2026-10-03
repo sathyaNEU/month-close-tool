@@ -1,0 +1,715 @@
+{
+  "_sample": "SAMPLE configuration for testing, not your company's accounting (docs/domain/sample-journal-rules.md)",
+  "body": {
+    "effective_from": "2026-06-01",
+    "spec": {
+      "condition": {
+        "args": [
+          {
+            "col": "attr_stage"
+          },
+          {
+            "col": "policy_trigger"
+          }
+        ],
+        "fn": "eq"
+      },
+      "definition_id": "sample_revenue_at_trigger",
+      "event_types": [
+        "ORDER_CAPTURED",
+        "ORDER_STAGE"
+      ],
+      "lines": [
+        {
+          "account": {
+            "account": "2020",
+            "keys": [],
+            "mapping": null
+          },
+          "amount": {
+            "args": [
+              {
+                "args": [
+                  {
+                    "col": "amount_card"
+                  },
+                  {
+                    "col": "amount_store_credit"
+                  }
+                ],
+                "fn": "add"
+              },
+              {
+                "col": "amount_tax"
+              }
+            ],
+            "fn": "sub"
+          },
+          "condition": null,
+          "description": null,
+          "dimensions": {},
+          "line_id": "deposits",
+          "side": "DR"
+        },
+        {
+          "account": {
+            "account": "2010",
+            "keys": [],
+            "mapping": null
+          },
+          "amount": {
+            "args": [
+              {
+                "args": [
+                  {
+                    "col": "amount_item_price"
+                  },
+                  {
+                    "col": "amount_seller_fee"
+                  }
+                ],
+                "fn": "sub"
+              },
+              {
+                "col": "amount_processing_fee"
+              }
+            ],
+            "fn": "sub"
+          },
+          "condition": {
+            "args": [
+              {
+                "col": "policy_model"
+              },
+              {
+                "lit": "agent",
+                "type": "string"
+              }
+            ],
+            "fn": "eq"
+          },
+          "description": null,
+          "dimensions": {},
+          "line_id": "seller_payable",
+          "side": "CR"
+        },
+        {
+          "account": {
+            "account": "4010",
+            "keys": [],
+            "mapping": null
+          },
+          "amount": {
+            "col": "amount_seller_fee"
+          },
+          "condition": {
+            "args": [
+              {
+                "col": "policy_model"
+              },
+              {
+                "lit": "agent",
+                "type": "string"
+              }
+            ],
+            "fn": "eq"
+          },
+          "description": null,
+          "dimensions": {
+            "program": {
+              "col": "program"
+            }
+          },
+          "line_id": "commission",
+          "side": "CR"
+        },
+        {
+          "account": {
+            "account": "4020",
+            "keys": [],
+            "mapping": null
+          },
+          "amount": {
+            "col": "amount_processing_fee"
+          },
+          "condition": {
+            "args": [
+              {
+                "col": "policy_model"
+              },
+              {
+                "lit": "agent",
+                "type": "string"
+              }
+            ],
+            "fn": "eq"
+          },
+          "description": null,
+          "dimensions": {
+            "program": {
+              "col": "program"
+            }
+          },
+          "line_id": "processing_fee",
+          "side": "CR"
+        },
+        {
+          "account": {
+            "account": "4050",
+            "keys": [],
+            "mapping": null
+          },
+          "amount": {
+            "col": "amount_item_price"
+          },
+          "condition": {
+            "args": [
+              {
+                "col": "policy_model"
+              },
+              {
+                "lit": "owned_inventory",
+                "type": "string"
+              }
+            ],
+            "fn": "eq"
+          },
+          "description": null,
+          "dimensions": {
+            "program": {
+              "col": "program"
+            }
+          },
+          "line_id": "product_revenue",
+          "side": "CR"
+        },
+        {
+          "account": {
+            "account": "5010",
+            "keys": [],
+            "mapping": null
+          },
+          "amount": {
+            "args": [
+              {
+                "args": [
+                  {
+                    "col": "amount_item_price"
+                  },
+                  {
+                    "col": "amount_seller_fee"
+                  }
+                ],
+                "fn": "sub"
+              },
+              {
+                "col": "amount_processing_fee"
+              }
+            ],
+            "fn": "sub"
+          },
+          "condition": {
+            "args": [
+              {
+                "col": "policy_model"
+              },
+              {
+                "lit": "owned_inventory",
+                "type": "string"
+              }
+            ],
+            "fn": "eq"
+          },
+          "description": null,
+          "dimensions": {},
+          "line_id": "cogs",
+          "side": "DR"
+        },
+        {
+          "account": {
+            "account": "2010",
+            "keys": [],
+            "mapping": null
+          },
+          "amount": {
+            "args": [
+              {
+                "args": [
+                  {
+                    "col": "amount_item_price"
+                  },
+                  {
+                    "col": "amount_seller_fee"
+                  }
+                ],
+                "fn": "sub"
+              },
+              {
+                "col": "amount_processing_fee"
+              }
+            ],
+            "fn": "sub"
+          },
+          "condition": {
+            "args": [
+              {
+                "col": "policy_model"
+              },
+              {
+                "lit": "owned_inventory",
+                "type": "string"
+              }
+            ],
+            "fn": "eq"
+          },
+          "description": null,
+          "dimensions": {},
+          "line_id": "owned_seller_payable",
+          "side": "CR"
+        },
+        {
+          "account": {
+            "account": "4030",
+            "keys": [],
+            "mapping": null
+          },
+          "amount": {
+            "col": "amount_buyer_fee"
+          },
+          "condition": null,
+          "description": null,
+          "dimensions": {
+            "program": {
+              "col": "program"
+            }
+          },
+          "line_id": "buyer_fee",
+          "side": "CR"
+        },
+        {
+          "account": {
+            "account": null,
+            "keys": [
+              {
+                "col": "policy_shipping"
+              }
+            ],
+            "mapping": "sample_shipping_account"
+          },
+          "amount": {
+            "col": "amount_shipping"
+          },
+          "condition": null,
+          "description": null,
+          "dimensions": {
+            "program": {
+              "col": "program"
+            }
+          },
+          "line_id": "shipping",
+          "side": "CR"
+        },
+        {
+          "account": {
+            "account": "4090",
+            "keys": [],
+            "mapping": null
+          },
+          "amount": {
+            "args": [
+              {
+                "args": [
+                  {
+                    "col": "policy_incentives"
+                  },
+                  {
+                    "lit": "contra_revenue",
+                    "type": "string"
+                  }
+                ],
+                "fn": "eq"
+              },
+              {
+                "col": "amount_incentive"
+              },
+              {
+                "args": [
+                  {
+                    "args": [
+                      {
+                        "col": "policy_incentives"
+                      },
+                      {
+                        "lit": "marketing",
+                        "type": "string"
+                      }
+                    ],
+                    "fn": "eq"
+                  },
+                  {
+                    "lit": 0,
+                    "type": "bigint"
+                  },
+                  {
+                    "args": [
+                      {
+                        "args": [
+                          {
+                            "col": "amount_incentive"
+                          },
+                          {
+                            "args": [
+                              {
+                                "args": [
+                                  {
+                                    "col": "amount_buyer_fee"
+                                  },
+                                  {
+                                    "args": [
+                                      {
+                                        "args": [
+                                          {
+                                            "col": "policy_shipping"
+                                          },
+                                          {
+                                            "lit": "gross",
+                                            "type": "string"
+                                          }
+                                        ],
+                                        "fn": "eq"
+                                      },
+                                      {
+                                        "col": "amount_shipping"
+                                      },
+                                      {
+                                        "lit": 0,
+                                        "type": "bigint"
+                                      }
+                                    ],
+                                    "fn": "if"
+                                  }
+                                ],
+                                "fn": "add"
+                              },
+                              {
+                                "args": [
+                                  {
+                                    "args": [
+                                      {
+                                        "col": "policy_model"
+                                      },
+                                      {
+                                        "lit": "owned_inventory",
+                                        "type": "string"
+                                      }
+                                    ],
+                                    "fn": "eq"
+                                  },
+                                  {
+                                    "col": "amount_item_price"
+                                  },
+                                  {
+                                    "lit": 0,
+                                    "type": "bigint"
+                                  }
+                                ],
+                                "fn": "if"
+                              }
+                            ],
+                            "fn": "add"
+                          }
+                        ],
+                        "fn": "le"
+                      },
+                      {
+                        "col": "amount_incentive"
+                      },
+                      {
+                        "args": [
+                          {
+                            "args": [
+                              {
+                                "col": "amount_buyer_fee"
+                              },
+                              {
+                                "args": [
+                                  {
+                                    "args": [
+                                      {
+                                        "col": "policy_shipping"
+                                      },
+                                      {
+                                        "lit": "gross",
+                                        "type": "string"
+                                      }
+                                    ],
+                                    "fn": "eq"
+                                  },
+                                  {
+                                    "col": "amount_shipping"
+                                  },
+                                  {
+                                    "lit": 0,
+                                    "type": "bigint"
+                                  }
+                                ],
+                                "fn": "if"
+                              }
+                            ],
+                            "fn": "add"
+                          },
+                          {
+                            "args": [
+                              {
+                                "args": [
+                                  {
+                                    "col": "policy_model"
+                                  },
+                                  {
+                                    "lit": "owned_inventory",
+                                    "type": "string"
+                                  }
+                                ],
+                                "fn": "eq"
+                              },
+                              {
+                                "col": "amount_item_price"
+                              },
+                              {
+                                "lit": 0,
+                                "type": "bigint"
+                              }
+                            ],
+                            "fn": "if"
+                          }
+                        ],
+                        "fn": "add"
+                      }
+                    ],
+                    "fn": "if"
+                  }
+                ],
+                "fn": "if"
+              }
+            ],
+            "fn": "if"
+          },
+          "condition": null,
+          "description": null,
+          "dimensions": {
+            "program": {
+              "col": "program"
+            }
+          },
+          "line_id": "incentive_contra",
+          "side": "DR"
+        },
+        {
+          "account": {
+            "account": "6010",
+            "keys": [],
+            "mapping": null
+          },
+          "amount": {
+            "args": [
+              {
+                "col": "amount_incentive"
+              },
+              {
+                "args": [
+                  {
+                    "args": [
+                      {
+                        "col": "policy_incentives"
+                      },
+                      {
+                        "lit": "contra_revenue",
+                        "type": "string"
+                      }
+                    ],
+                    "fn": "eq"
+                  },
+                  {
+                    "col": "amount_incentive"
+                  },
+                  {
+                    "args": [
+                      {
+                        "args": [
+                          {
+                            "col": "policy_incentives"
+                          },
+                          {
+                            "lit": "marketing",
+                            "type": "string"
+                          }
+                        ],
+                        "fn": "eq"
+                      },
+                      {
+                        "lit": 0,
+                        "type": "bigint"
+                      },
+                      {
+                        "args": [
+                          {
+                            "args": [
+                              {
+                                "col": "amount_incentive"
+                              },
+                              {
+                                "args": [
+                                  {
+                                    "args": [
+                                      {
+                                        "col": "amount_buyer_fee"
+                                      },
+                                      {
+                                        "args": [
+                                          {
+                                            "args": [
+                                              {
+                                                "col": "policy_shipping"
+                                              },
+                                              {
+                                                "lit": "gross",
+                                                "type": "string"
+                                              }
+                                            ],
+                                            "fn": "eq"
+                                          },
+                                          {
+                                            "col": "amount_shipping"
+                                          },
+                                          {
+                                            "lit": 0,
+                                            "type": "bigint"
+                                          }
+                                        ],
+                                        "fn": "if"
+                                      }
+                                    ],
+                                    "fn": "add"
+                                  },
+                                  {
+                                    "args": [
+                                      {
+                                        "args": [
+                                          {
+                                            "col": "policy_model"
+                                          },
+                                          {
+                                            "lit": "owned_inventory",
+                                            "type": "string"
+                                          }
+                                        ],
+                                        "fn": "eq"
+                                      },
+                                      {
+                                        "col": "amount_item_price"
+                                      },
+                                      {
+                                        "lit": 0,
+                                        "type": "bigint"
+                                      }
+                                    ],
+                                    "fn": "if"
+                                  }
+                                ],
+                                "fn": "add"
+                              }
+                            ],
+                            "fn": "le"
+                          },
+                          {
+                            "col": "amount_incentive"
+                          },
+                          {
+                            "args": [
+                              {
+                                "args": [
+                                  {
+                                    "col": "amount_buyer_fee"
+                                  },
+                                  {
+                                    "args": [
+                                      {
+                                        "args": [
+                                          {
+                                            "col": "policy_shipping"
+                                          },
+                                          {
+                                            "lit": "gross",
+                                            "type": "string"
+                                          }
+                                        ],
+                                        "fn": "eq"
+                                      },
+                                      {
+                                        "col": "amount_shipping"
+                                      },
+                                      {
+                                        "lit": 0,
+                                        "type": "bigint"
+                                      }
+                                    ],
+                                    "fn": "if"
+                                  }
+                                ],
+                                "fn": "add"
+                              },
+                              {
+                                "args": [
+                                  {
+                                    "args": [
+                                      {
+                                        "col": "policy_model"
+                                      },
+                                      {
+                                        "lit": "owned_inventory",
+                                        "type": "string"
+                                      }
+                                    ],
+                                    "fn": "eq"
+                                  },
+                                  {
+                                    "col": "amount_item_price"
+                                  },
+                                  {
+                                    "lit": 0,
+                                    "type": "bigint"
+                                  }
+                                ],
+                                "fn": "if"
+                              }
+                            ],
+                            "fn": "add"
+                          }
+                        ],
+                        "fn": "if"
+                      }
+                    ],
+                    "fn": "if"
+                  }
+                ],
+                "fn": "if"
+              }
+            ],
+            "fn": "sub"
+          },
+          "condition": null,
+          "description": null,
+          "dimensions": {
+            "program": {
+              "col": "program"
+            }
+          },
+          "line_id": "incentive_marketing",
+          "side": "DR"
+        }
+      ],
+      "name": "Revenue and the seller payable when the program's trigger is reached"
+    }
+  },
+  "resource": "auto-journal-definitions"
+}

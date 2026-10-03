@@ -1,0 +1,319 @@
+{
+  "_sample": "SAMPLE configuration for testing, not your company's accounting (docs/domain/sample-journal-rules.md)",
+  "body": {
+    "effective_from": "2026-06-01",
+    "spec": {
+      "amounts": [
+        "amount",
+        "fee"
+      ],
+      "attributes": [
+        "direction",
+        "psp"
+      ],
+      "description": "A chargeback debited by the payment provider, or its reversal after a won dispute",
+      "event_type": "PSP_DISPUTE",
+      "identities": [],
+      "sources": [
+        {
+          "filter": {
+            "args": [
+              {
+                "args": [
+                  {
+                    "col": "type"
+                  },
+                  {
+                    "lit": "dispute",
+                    "type": "string"
+                  }
+                ],
+                "fn": "eq"
+              },
+              {
+                "args": [
+                  {
+                    "col": "reporting_category"
+                  },
+                  {
+                    "lit": "dispute_reversal",
+                    "type": "string"
+                  }
+                ],
+                "fn": "eq"
+              }
+            ],
+            "fn": "or"
+          },
+          "landing_table": "landing.stripe_balance_transactions",
+          "lookups": [
+            {
+              "alias": "order",
+              "on": {
+                "order_id": {
+                  "col": "order_ref"
+                }
+              },
+              "table": "landing.orders"
+            }
+          ],
+          "mapping": {
+            "accounting_date": {
+              "args": [
+                {
+                  "col": "created"
+                }
+              ],
+              "fn": "date_of"
+            },
+            "amount_amount": {
+              "args": [
+                {
+                  "col": "amount"
+                }
+              ],
+              "fn": "abs"
+            },
+            "amount_fee": {
+              "args": [
+                {
+                  "col": "fee"
+                }
+              ],
+              "fn": "abs"
+            },
+            "attr_direction": {
+              "args": [
+                {
+                  "args": [
+                    {
+                      "col": "type"
+                    },
+                    {
+                      "lit": "dispute",
+                      "type": "string"
+                    }
+                  ],
+                  "fn": "eq"
+                },
+                {
+                  "lit": "lost",
+                  "type": "string"
+                },
+                {
+                  "lit": "reversed",
+                  "type": "string"
+                }
+              ],
+              "fn": "if"
+            },
+            "attr_psp": {
+              "lit": "stripe",
+              "type": "string"
+            },
+            "currency": {
+              "args": [
+                {
+                  "col": "currency"
+                }
+              ],
+              "fn": "upper"
+            },
+            "entity_id": {
+              "args": [
+                {
+                  "col": "account_id"
+                },
+                {
+                  "lit": "^acct_1Platform([A-Z0-9]+)",
+                  "type": "string"
+                },
+                {
+                  "lit": 1,
+                  "type": "bigint"
+                }
+              ],
+              "fn": "regex_extract"
+            },
+            "order_id": {
+              "col": "order_ref"
+            },
+            "program": {
+              "col": "order_program"
+            }
+          },
+          "source_id": "stripe_disputes"
+        },
+        {
+          "filter": {
+            "args": [
+              {
+                "args": [
+                  {
+                    "col": "type"
+                  },
+                  {
+                    "lit": "Chargeback",
+                    "type": "string"
+                  }
+                ],
+                "fn": "eq"
+              },
+              {
+                "args": [
+                  {
+                    "col": "type"
+                  },
+                  {
+                    "lit": "ChargebackReversed",
+                    "type": "string"
+                  }
+                ],
+                "fn": "eq"
+              }
+            ],
+            "fn": "or"
+          },
+          "landing_table": "landing.adyen_settlement_details",
+          "lookups": [
+            {
+              "alias": "order",
+              "on": {
+                "order_id": {
+                  "col": "merchant_reference"
+                }
+              },
+              "table": "landing.orders"
+            }
+          ],
+          "mapping": {
+            "accounting_date": {
+              "args": [
+                {
+                  "col": "creation_date"
+                }
+              ],
+              "fn": "date_of"
+            },
+            "amount_amount": {
+              "args": [
+                {
+                  "args": [
+                    {
+                      "args": [
+                        {
+                          "args": [
+                            {
+                              "col": "net_debit"
+                            },
+                            {
+                              "lit": "0",
+                              "type": "string"
+                            }
+                          ],
+                          "fn": "coalesce"
+                        }
+                      ],
+                      "fn": "parse_decimal"
+                    },
+                    {
+                      "col": "net_currency"
+                    }
+                  ],
+                  "fn": "to_minor_units"
+                },
+                {
+                  "args": [
+                    {
+                      "args": [
+                        {
+                          "args": [
+                            {
+                              "col": "net_credit"
+                            },
+                            {
+                              "lit": "0",
+                              "type": "string"
+                            }
+                          ],
+                          "fn": "coalesce"
+                        }
+                      ],
+                      "fn": "parse_decimal"
+                    },
+                    {
+                      "col": "net_currency"
+                    }
+                  ],
+                  "fn": "to_minor_units"
+                }
+              ],
+              "fn": "add"
+            },
+            "amount_fee": {
+              "lit": 0,
+              "type": "bigint"
+            },
+            "attr_direction": {
+              "args": [
+                {
+                  "args": [
+                    {
+                      "col": "type"
+                    },
+                    {
+                      "lit": "Chargeback",
+                      "type": "string"
+                    }
+                  ],
+                  "fn": "eq"
+                },
+                {
+                  "lit": "lost",
+                  "type": "string"
+                },
+                {
+                  "lit": "reversed",
+                  "type": "string"
+                }
+              ],
+              "fn": "if"
+            },
+            "attr_psp": {
+              "lit": "adyen",
+              "type": "string"
+            },
+            "currency": {
+              "col": "net_currency"
+            },
+            "entity_id": {
+              "args": [
+                {
+                  "col": "merchant_account"
+                },
+                {
+                  "lit": "^Platform([A-Z0-9]+)",
+                  "type": "string"
+                },
+                {
+                  "lit": 1,
+                  "type": "bigint"
+                }
+              ],
+              "fn": "regex_extract"
+            },
+            "order_id": {
+              "col": "merchant_reference"
+            },
+            "program": {
+              "col": "order_program"
+            }
+          },
+          "source_id": "adyen_chargebacks"
+        }
+      ],
+      "type_id": "sample_psp_dispute"
+    }
+  },
+  "resource": "event-types"
+}

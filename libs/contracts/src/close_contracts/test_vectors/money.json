@@ -1,0 +1,163 @@
+[
+  {
+    "amount_minor": 5,
+    "from": "USD",
+    "to": "USD",
+    "rate": "0.5",
+    "expected_minor": 2
+  },
+  {
+    "amount_minor": 7,
+    "from": "USD",
+    "to": "USD",
+    "rate": "0.5",
+    "expected_minor": 4
+  },
+  {
+    "amount_minor": -5,
+    "from": "USD",
+    "to": "USD",
+    "rate": "0.5",
+    "expected_minor": -2
+  },
+  {
+    "amount_minor": -7,
+    "from": "USD",
+    "to": "USD",
+    "rate": "0.5",
+    "expected_minor": -4
+  },
+  {
+    "amount_minor": 1,
+    "from": "USD",
+    "to": "USD",
+    "rate": "0.5",
+    "expected_minor": 0
+  },
+  {
+    "amount_minor": 3,
+    "from": "USD",
+    "to": "USD",
+    "rate": "0.5",
+    "expected_minor": 2
+  },
+  {
+    "amount_minor": 12345,
+    "from": "USD",
+    "to": "EUR",
+    "rate": "0.923456789012",
+    "expected_minor": 11400
+  },
+  {
+    "amount_minor": -12345,
+    "from": "USD",
+    "to": "EUR",
+    "rate": "0.923456789012",
+    "expected_minor": -11400
+  },
+  {
+    "amount_minor": 12345,
+    "from": "USD",
+    "to": "JPY",
+    "rate": "149.123456789012",
+    "expected_minor": 18409
+  },
+  {
+    "amount_minor": 150,
+    "from": "USD",
+    "to": "JPY",
+    "rate": "1",
+    "expected_minor": 2
+  },
+  {
+    "amount_minor": 250,
+    "from": "USD",
+    "to": "JPY",
+    "rate": "1",
+    "expected_minor": 2
+  },
+  {
+    "amount_minor": 100,
+    "from": "JPY",
+    "to": "USD",
+    "rate": "0.006700000000",
+    "expected_minor": 67
+  },
+  {
+    "amount_minor": 1,
+    "from": "JPY",
+    "to": "USD",
+    "rate": "0.006750000000",
+    "expected_minor": 1
+  },
+  {
+    "amount_minor": 123456,
+    "from": "KWD",
+    "to": "USD",
+    "rate": "3.254100000000",
+    "expected_minor": 40174
+  },
+  {
+    "amount_minor": 100000,
+    "from": "USD",
+    "to": "KWD",
+    "rate": "0.307300000000",
+    "expected_minor": 307300
+  },
+  {
+    "amount_minor": 999999999999999,
+    "from": "USD",
+    "to": "EUR",
+    "rate": "0.5",
+    "expected_minor": 500000000000000
+  },
+  {
+    "amount_minor": 123456789012345,
+    "from": "EUR",
+    "to": "USD",
+    "rate": "1.087654321098",
+    "expected_minor": 134278310038161
+  },
+  {
+    "amount_minor": 1,
+    "from": "GBP",
+    "to": "USD",
+    "rate": "9999999.999999999999",
+    "expected_minor": 10000000
+  },
+  {
+    "amount_minor": 987654321,
+    "from": "GBP",
+    "to": "EUR",
+    "rate": "0.000000000001",
+    "expected_minor": 0
+  },
+  {
+    "amount_minor": 500,
+    "from": "EUR",
+    "to": "GBP",
+    "rate": "0.855",
+    "expected_minor": 428
+  },
+  {
+    "amount_minor": -500,
+    "from": "EUR",
+    "to": "GBP",
+    "rate": "0.855",
+    "expected_minor": -428
+  },
+  {
+    "amount_minor": 1000000,
+    "from": "CLF",
+    "to": "USD",
+    "rate": "38.123456789012",
+    "expected_minor": 381235
+  },
+  {
+    "amount_minor": 42,
+    "from": "USD",
+    "to": "CLF",
+    "rate": "0.026230000000",
+    "expected_minor": 110
+  }
+]

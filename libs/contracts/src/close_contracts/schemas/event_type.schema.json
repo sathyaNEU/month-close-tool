@@ -1,0 +1,304 @@
+{
+  "$defs": {
+    "Call": {
+      "additionalProperties": false,
+      "properties": {
+        "args": {
+          "default": [],
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/Col"
+              },
+              {
+                "$ref": "#/$defs/Lit"
+              },
+              {
+                "$ref": "#/$defs/Call"
+              }
+            ]
+          },
+          "maxItems": 64,
+          "title": "Args",
+          "type": "array"
+        },
+        "fn": {
+          "pattern": "^[a-z][a-z0-9_]{0,63}$",
+          "title": "Fn",
+          "type": "string"
+        }
+      },
+      "required": [
+        "fn"
+      ],
+      "title": "Call",
+      "type": "object"
+    },
+    "Col": {
+      "additionalProperties": false,
+      "properties": {
+        "col": {
+          "pattern": "^(?:[abc]\\.)?[A-Za-z_][A-Za-z0-9_]{0,127}$",
+          "title": "Col",
+          "type": "string"
+        }
+      },
+      "required": [
+        "col"
+      ],
+      "title": "Col",
+      "type": "object"
+    },
+    "DslType": {
+      "enum": [
+        "string",
+        "bigint",
+        "boolean",
+        "date",
+        "timestamp",
+        "decimal"
+      ],
+      "title": "DslType",
+      "type": "string"
+    },
+    "EventSource": {
+      "additionalProperties": false,
+      "properties": {
+        "filter": {
+          "anyOf": [
+            {
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/Col"
+                },
+                {
+                  "$ref": "#/$defs/Lit"
+                },
+                {
+                  "$ref": "#/$defs/Call"
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Filter"
+        },
+        "landing_table": {
+          "pattern": "^landing\\.[a-z][a-z0-9_]{0,62}$",
+          "title": "Landing Table",
+          "type": "string"
+        },
+        "lookups": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/Lookup"
+          },
+          "maxItems": 4,
+          "title": "Lookups",
+          "type": "array"
+        },
+        "mapping": {
+          "additionalProperties": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/Col"
+              },
+              {
+                "$ref": "#/$defs/Lit"
+              },
+              {
+                "$ref": "#/$defs/Call"
+              }
+            ]
+          },
+          "title": "Mapping",
+          "type": "object"
+        },
+        "source_id": {
+          "pattern": "^[a-z][a-z0-9_]{2,63}$",
+          "title": "Source Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_id",
+        "landing_table",
+        "mapping"
+      ],
+      "title": "EventSource",
+      "type": "object"
+    },
+    "Identity": {
+      "additionalProperties": false,
+      "description": "An equation every event must satisfy. An event that breaks one is a data problem (suspense).",
+      "properties": {
+        "expr": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/Col"
+            },
+            {
+              "$ref": "#/$defs/Lit"
+            },
+            {
+              "$ref": "#/$defs/Call"
+            }
+          ],
+          "title": "Expr"
+        },
+        "name": {
+          "pattern": "^[a-z][a-z0-9_]{0,40}$",
+          "title": "Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "expr"
+      ],
+      "title": "Identity",
+      "type": "object"
+    },
+    "Lit": {
+      "additionalProperties": false,
+      "properties": {
+        "lit": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "maximum": 9007199254740991,
+              "minimum": -9007199254740991,
+              "type": "integer"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Lit"
+        },
+        "type": {
+          "$ref": "#/$defs/DslType"
+        }
+      },
+      "required": [
+        "lit",
+        "type"
+      ],
+      "title": "Lit",
+      "type": "object"
+    },
+    "Lookup": {
+      "additionalProperties": false,
+      "description": "One row of another landing table, found by that table's full identity key.",
+      "properties": {
+        "alias": {
+          "pattern": "^[a-z][a-z0-9_]{0,40}$",
+          "title": "Alias",
+          "type": "string"
+        },
+        "on": {
+          "additionalProperties": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/Col"
+              },
+              {
+                "$ref": "#/$defs/Lit"
+              },
+              {
+                "$ref": "#/$defs/Call"
+              }
+            ]
+          },
+          "minProperties": 1,
+          "title": "On",
+          "type": "object"
+        },
+        "table": {
+          "pattern": "^landing\\.[a-z][a-z0-9_]{0,62}$",
+          "title": "Table",
+          "type": "string"
+        }
+      },
+      "required": [
+        "alias",
+        "table",
+        "on"
+      ],
+      "title": "Lookup",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "amounts": {
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 40,
+      "minItems": 1,
+      "title": "Amounts",
+      "type": "array"
+    },
+    "attributes": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 40,
+      "title": "Attributes",
+      "type": "array"
+    },
+    "description": {
+      "maxLength": 500,
+      "minLength": 1,
+      "title": "Description",
+      "type": "string"
+    },
+    "event_type": {
+      "pattern": "^[A-Z][A-Z0-9_]{2,63}$",
+      "title": "Event Type",
+      "type": "string"
+    },
+    "identities": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/Identity"
+      },
+      "maxItems": 20,
+      "title": "Identities",
+      "type": "array"
+    },
+    "sources": {
+      "items": {
+        "$ref": "#/$defs/EventSource"
+      },
+      "maxItems": 10,
+      "minItems": 1,
+      "title": "Sources",
+      "type": "array"
+    },
+    "type_id": {
+      "pattern": "^[a-z][a-z0-9_]{2,63}$",
+      "title": "Type Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "type_id",
+    "event_type",
+    "description",
+    "amounts",
+    "sources"
+  ],
+  "title": "EventType",
+  "type": "object"
+}

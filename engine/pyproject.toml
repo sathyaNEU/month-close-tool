@@ -1,0 +1,21 @@
+[project]
+name = "close-engine"
+version = "0.1.0"
+description = "Close platform data-plane engine (PySpark + Delta): matching and journaling jobs. Deployed to Databricks as a wheel."
+requires-python = ">=3.12,<3.13"
+# pyspark, delta-spark, pandas, pyarrow and numpy are provided by Databricks Runtime 18 LTS and are
+# installed locally through the workspace `local` dependency group, so they are not runtime deps here.
+dependencies = ["close-contracts", "psycopg[binary]>=3.2,<4"]  # psycopg: the posting job reads posting_queue
+
+[project.scripts]
+close-job = "close_engine.jobs.__main__:main"
+
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/close_engine"]
+
+[tool.uv.sources]
+close-contracts = { workspace = true }

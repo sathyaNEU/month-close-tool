@@ -1,0 +1,1233 @@
+{
+  "identity_keys": {
+    "landing.adyen_settlement_details": [
+      "merchant_account",
+      "batch_number",
+      "type",
+      "psp_reference",
+      "modification_reference"
+    ],
+    "landing.bank_statement_lines": [
+      "statement_id",
+      "line_id"
+    ],
+    "landing.carrier_invoice_lines": [
+      "invoice_id",
+      "line_id"
+    ],
+    "landing.disputes": [
+      "dispute_id"
+    ],
+    "landing.order_events": [
+      "event_id"
+    ],
+    "landing.orders": [
+      "order_id"
+    ],
+    "landing.payout_funding": [
+      "provider",
+      "funding_id"
+    ],
+    "landing.payout_items": [
+      "provider",
+      "payment_id"
+    ],
+    "landing.psp_fee_invoices": [
+      "invoice_id"
+    ],
+    "landing.seller_payables": [
+      "payable_id"
+    ],
+    "landing.sellers": [
+      "seller_id"
+    ],
+    "landing.shipping_labels": [
+      "label_id"
+    ],
+    "landing.stored_value_ledger": [
+      "entry_id"
+    ],
+    "landing.stripe_balance_transactions": [
+      "id"
+    ],
+    "landing.stripe_payouts": [
+      "id"
+    ],
+    "landing.tax_documents": [
+      "document_code"
+    ],
+    "landing.tax_remittances": [
+      "remittance_id"
+    ]
+  },
+  "sources": [
+    {
+      "description": "Marketplace orders (presentment currency)",
+      "filter": null,
+      "identity_key": [
+        "order_id"
+      ],
+      "incremental": {
+        "column": null,
+        "lookback_days": 3,
+        "mode": "cdf"
+      },
+      "landing_table": "landing.orders",
+      "mapping": {
+        "amount_minor": {
+          "col": "card_amount_minor"
+        },
+        "counterparty": {
+          "col": "buyer_id"
+        },
+        "currency": {
+          "col": "currency"
+        },
+        "description": {
+          "col": "program"
+        },
+        "entity_id": {
+          "col": "entity_id"
+        },
+        "number_1": {
+          "col": "tax_minor"
+        },
+        "number_2": {
+          "col": "store_credit_minor"
+        },
+        "number_3": {
+          "col": "item_price_minor"
+        },
+        "reference": {
+          "col": "order_id"
+        },
+        "reference_2": {
+          "col": "psp_payment_ref"
+        },
+        "text_1": {
+          "col": "psp"
+        },
+        "text_2": {
+          "col": "seller_id"
+        },
+        "text_3": {
+          "col": "status"
+        },
+        "transaction_date": {
+          "args": [
+            {
+              "col": "placed_at"
+            }
+          ],
+          "fn": "date_of"
+        }
+      },
+      "sign": "as_is",
+      "source_id": "orders"
+    },
+    {
+      "description": "Stripe balance transactions (settlement currency)",
+      "filter": null,
+      "identity_key": [
+        "id"
+      ],
+      "incremental": {
+        "column": null,
+        "lookback_days": 3,
+        "mode": "cdf"
+      },
+      "landing_table": "landing.stripe_balance_transactions",
+      "mapping": {
+        "amount_minor": {
+          "col": "amount"
+        },
+        "currency": {
+          "args": [
+            {
+              "col": "currency"
+            }
+          ],
+          "fn": "upper"
+        },
+        "description": {
+          "args": [
+            {
+              "col": "type"
+            },
+            {
+              "lit": ":",
+              "type": "string"
+            },
+            {
+              "col": "reporting_category"
+            }
+          ],
+          "fn": "concat"
+        },
+        "entity_id": {
+          "args": [
+            {
+              "col": "account_id"
+            },
+            {
+              "lit": "^acct_1Platform([A-Z0-9]+)",
+              "type": "string"
+            },
+            {
+              "lit": 1,
+              "type": "bigint"
+            }
+          ],
+          "fn": "regex_extract"
+        },
+        "number_1": {
+          "col": "fee"
+        },
+        "number_2": {
+          "col": "net"
+        },
+        "number_3": {
+          "col": "customer_facing_amount"
+        },
+        "reference": {
+          "args": [
+            {
+              "col": "order_ref"
+            },
+            {
+              "col": "source_id"
+            }
+          ],
+          "fn": "coalesce"
+        },
+        "reference_2": {
+          "col": "payment_intent_id"
+        },
+        "reference_3": {
+          "col": "automatic_payout_id"
+        },
+        "text_1": {
+          "col": "type"
+        },
+        "text_2": {
+          "args": [
+            {
+              "col": "customer_facing_currency"
+            }
+          ],
+          "fn": "upper"
+        },
+        "text_3": {
+          "col": "source_id"
+        },
+        "transaction_date": {
+          "args": [
+            {
+              "col": "created"
+            }
+          ],
+          "fn": "date_of"
+        },
+        "value_date": {
+          "col": "available_on"
+        }
+      },
+      "sign": "as_is",
+      "source_id": "stripe_balance_transactions"
+    },
+    {
+      "description": "Stripe payouts",
+      "filter": null,
+      "identity_key": [
+        "id"
+      ],
+      "incremental": {
+        "column": null,
+        "lookback_days": 3,
+        "mode": "cdf"
+      },
+      "landing_table": "landing.stripe_payouts",
+      "mapping": {
+        "amount_minor": {
+          "col": "amount"
+        },
+        "currency": {
+          "args": [
+            {
+              "col": "currency"
+            }
+          ],
+          "fn": "upper"
+        },
+        "entity_id": {
+          "args": [
+            {
+              "col": "account_id"
+            },
+            {
+              "lit": "^acct_1Platform([A-Z0-9]+)",
+              "type": "string"
+            },
+            {
+              "lit": 1,
+              "type": "bigint"
+            }
+          ],
+          "fn": "regex_extract"
+        },
+        "reference": {
+          "col": "id"
+        },
+        "reference_2": {
+          "col": "trace_id"
+        },
+        "text_1": {
+          "col": "status"
+        },
+        "transaction_date": {
+          "args": [
+            {
+              "col": "created"
+            }
+          ],
+          "fn": "date_of"
+        },
+        "value_date": {
+          "col": "arrival_date"
+        }
+      },
+      "sign": "as_is",
+      "source_id": "stripe_payouts"
+    },
+    {
+      "description": "Adyen settlement details (net in the settlement currency, gross in the payment currency)",
+      "filter": null,
+      "identity_key": [
+        "merchant_account",
+        "batch_number",
+        "type",
+        "psp_reference",
+        "modification_reference"
+      ],
+      "incremental": {
+        "column": null,
+        "lookback_days": 3,
+        "mode": "cdf"
+      },
+      "landing_table": "landing.adyen_settlement_details",
+      "mapping": {
+        "amount_minor": {
+          "args": [
+            {
+              "args": [
+                {
+                  "args": [
+                    {
+                      "args": [
+                        {
+                          "col": "net_credit"
+                        },
+                        {
+                          "lit": "0",
+                          "type": "string"
+                        }
+                      ],
+                      "fn": "coalesce"
+                    }
+                  ],
+                  "fn": "parse_decimal"
+                },
+                {
+                  "col": "net_currency"
+                }
+              ],
+              "fn": "to_minor_units"
+            },
+            {
+              "args": [
+                {
+                  "args": [
+                    {
+                      "args": [
+                        {
+                          "col": "net_debit"
+                        },
+                        {
+                          "lit": "0",
+                          "type": "string"
+                        }
+                      ],
+                      "fn": "coalesce"
+                    }
+                  ],
+                  "fn": "parse_decimal"
+                },
+                {
+                  "col": "net_currency"
+                }
+              ],
+              "fn": "to_minor_units"
+            }
+          ],
+          "fn": "sub"
+        },
+        "currency": {
+          "col": "net_currency"
+        },
+        "description": {
+          "col": "type"
+        },
+        "entity_id": {
+          "args": [
+            {
+              "col": "merchant_account"
+            },
+            {
+              "lit": "^Platform([A-Z0-9]+)",
+              "type": "string"
+            },
+            {
+              "lit": 1,
+              "type": "bigint"
+            }
+          ],
+          "fn": "regex_extract"
+        },
+        "number_1": {
+          "args": [
+            {
+              "args": [
+                {
+                  "args": [
+                    {
+                      "args": [
+                        {
+                          "col": "gross_credit"
+                        },
+                        {
+                          "lit": "0",
+                          "type": "string"
+                        }
+                      ],
+                      "fn": "coalesce"
+                    }
+                  ],
+                  "fn": "parse_decimal"
+                },
+                {
+                  "col": "gross_currency"
+                }
+              ],
+              "fn": "to_minor_units"
+            },
+            {
+              "args": [
+                {
+                  "args": [
+                    {
+                      "args": [
+                        {
+                          "col": "gross_debit"
+                        },
+                        {
+                          "lit": "0",
+                          "type": "string"
+                        }
+                      ],
+                      "fn": "coalesce"
+                    }
+                  ],
+                  "fn": "parse_decimal"
+                },
+                {
+                  "col": "gross_currency"
+                }
+              ],
+              "fn": "to_minor_units"
+            }
+          ],
+          "fn": "sub"
+        },
+        "number_2": {
+          "col": "batch_number"
+        },
+        "reference": {
+          "col": "merchant_reference"
+        },
+        "reference_2": {
+          "col": "psp_reference"
+        },
+        "reference_3": {
+          "col": "modification_reference"
+        },
+        "text_1": {
+          "col": "type"
+        },
+        "text_2": {
+          "col": "gross_currency"
+        },
+        "transaction_date": {
+          "args": [
+            {
+              "col": "creation_date"
+            }
+          ],
+          "fn": "date_of"
+        }
+      },
+      "sign": "as_is",
+      "source_id": "adyen_settlement_details"
+    },
+    {
+      "description": "Bank statement lines delivered as bai2",
+      "filter": {
+        "args": [
+          {
+            "col": "format"
+          },
+          {
+            "lit": "bai2",
+            "type": "string"
+          }
+        ],
+        "fn": "eq"
+      },
+      "identity_key": [
+        "statement_id",
+        "line_id"
+      ],
+      "incremental": {
+        "column": "booking_date",
+        "lookback_days": 5,
+        "mode": "column"
+      },
+      "landing_table": "landing.bank_statement_lines",
+      "mapping": {
+        "amount_minor": {
+          "args": [
+            {
+              "args": [
+                {
+                  "col": "credit_debit"
+                },
+                {
+                  "lit": "D",
+                  "type": "string"
+                }
+              ],
+              "fn": "eq"
+            },
+            {
+              "args": [
+                {
+                  "args": [
+                    {
+                      "args": [
+                        {
+                          "col": "amount_text"
+                        },
+                        {
+                          "lit": 2,
+                          "type": "bigint"
+                        }
+                      ],
+                      "fn": "parse_implied_decimals"
+                    },
+                    {
+                      "col": "currency"
+                    }
+                  ],
+                  "fn": "to_minor_units"
+                }
+              ],
+              "fn": "neg"
+            },
+            {
+              "args": [
+                {
+                  "args": [
+                    {
+                      "col": "amount_text"
+                    },
+                    {
+                      "lit": 2,
+                      "type": "bigint"
+                    }
+                  ],
+                  "fn": "parse_implied_decimals"
+                },
+                {
+                  "col": "currency"
+                }
+              ],
+              "fn": "to_minor_units"
+            }
+          ],
+          "fn": "if"
+        },
+        "currency": {
+          "col": "currency"
+        },
+        "description": {
+          "col": "text"
+        },
+        "entity_id": {
+          "args": [
+            {
+              "col": "account_id"
+            },
+            {
+              "lit": 1,
+              "type": "bigint"
+            },
+            {
+              "lit": 4,
+              "type": "bigint"
+            }
+          ],
+          "fn": "substring"
+        },
+        "reference": {
+          "col": "bank_reference"
+        },
+        "reference_2": {
+          "col": "end_to_end_id"
+        },
+        "reference_3": {
+          "col": "customer_reference"
+        },
+        "text_1": {
+          "col": "type_code"
+        },
+        "text_2": {
+          "col": "credit_debit"
+        },
+        "transaction_date": {
+          "col": "booking_date"
+        },
+        "value_date": {
+          "col": "value_date"
+        }
+      },
+      "sign": "as_is",
+      "source_id": "bank_bai2"
+    },
+    {
+      "description": "Bank statement lines delivered as camt053",
+      "filter": {
+        "args": [
+          {
+            "col": "format"
+          },
+          {
+            "lit": "camt053",
+            "type": "string"
+          }
+        ],
+        "fn": "eq"
+      },
+      "identity_key": [
+        "statement_id",
+        "line_id"
+      ],
+      "incremental": {
+        "column": "booking_date",
+        "lookback_days": 5,
+        "mode": "column"
+      },
+      "landing_table": "landing.bank_statement_lines",
+      "mapping": {
+        "amount_minor": {
+          "args": [
+            {
+              "args": [
+                {
+                  "col": "credit_debit"
+                },
+                {
+                  "lit": "D",
+                  "type": "string"
+                }
+              ],
+              "fn": "eq"
+            },
+            {
+              "args": [
+                {
+                  "args": [
+                    {
+                      "args": [
+                        {
+                          "col": "amount_text"
+                        }
+                      ],
+                      "fn": "parse_decimal"
+                    },
+                    {
+                      "col": "currency"
+                    }
+                  ],
+                  "fn": "to_minor_units"
+                }
+              ],
+              "fn": "neg"
+            },
+            {
+              "args": [
+                {
+                  "args": [
+                    {
+                      "col": "amount_text"
+                    }
+                  ],
+                  "fn": "parse_decimal"
+                },
+                {
+                  "col": "currency"
+                }
+              ],
+              "fn": "to_minor_units"
+            }
+          ],
+          "fn": "if"
+        },
+        "currency": {
+          "col": "currency"
+        },
+        "description": {
+          "col": "text"
+        },
+        "entity_id": {
+          "args": [
+            {
+              "col": "account_id"
+            },
+            {
+              "lit": 1,
+              "type": "bigint"
+            },
+            {
+              "lit": 4,
+              "type": "bigint"
+            }
+          ],
+          "fn": "substring"
+        },
+        "reference": {
+          "col": "bank_reference"
+        },
+        "reference_2": {
+          "col": "end_to_end_id"
+        },
+        "reference_3": {
+          "col": "customer_reference"
+        },
+        "text_1": {
+          "col": "type_code"
+        },
+        "text_2": {
+          "col": "credit_debit"
+        },
+        "transaction_date": {
+          "col": "booking_date"
+        },
+        "value_date": {
+          "col": "value_date"
+        }
+      },
+      "sign": "as_is",
+      "source_id": "bank_camt053"
+    },
+    {
+      "description": "Bank statement lines delivered as mt940",
+      "filter": {
+        "args": [
+          {
+            "col": "format"
+          },
+          {
+            "lit": "mt940",
+            "type": "string"
+          }
+        ],
+        "fn": "eq"
+      },
+      "identity_key": [
+        "statement_id",
+        "line_id"
+      ],
+      "incremental": {
+        "column": "booking_date",
+        "lookback_days": 5,
+        "mode": "column"
+      },
+      "landing_table": "landing.bank_statement_lines",
+      "mapping": {
+        "amount_minor": {
+          "args": [
+            {
+              "args": [
+                {
+                  "col": "credit_debit"
+                },
+                {
+                  "lit": "D",
+                  "type": "string"
+                }
+              ],
+              "fn": "eq"
+            },
+            {
+              "args": [
+                {
+                  "args": [
+                    {
+                      "args": [
+                        {
+                          "col": "amount_text"
+                        }
+                      ],
+                      "fn": "parse_decimal_comma"
+                    },
+                    {
+                      "col": "currency"
+                    }
+                  ],
+                  "fn": "to_minor_units"
+                }
+              ],
+              "fn": "neg"
+            },
+            {
+              "args": [
+                {
+                  "args": [
+                    {
+                      "col": "amount_text"
+                    }
+                  ],
+                  "fn": "parse_decimal_comma"
+                },
+                {
+                  "col": "currency"
+                }
+              ],
+              "fn": "to_minor_units"
+            }
+          ],
+          "fn": "if"
+        },
+        "currency": {
+          "col": "currency"
+        },
+        "description": {
+          "col": "text"
+        },
+        "entity_id": {
+          "args": [
+            {
+              "col": "account_id"
+            },
+            {
+              "lit": 1,
+              "type": "bigint"
+            },
+            {
+              "lit": 4,
+              "type": "bigint"
+            }
+          ],
+          "fn": "substring"
+        },
+        "reference": {
+          "col": "bank_reference"
+        },
+        "reference_2": {
+          "col": "end_to_end_id"
+        },
+        "reference_3": {
+          "col": "customer_reference"
+        },
+        "text_1": {
+          "col": "type_code"
+        },
+        "text_2": {
+          "col": "credit_debit"
+        },
+        "transaction_date": {
+          "col": "booking_date"
+        },
+        "value_date": {
+          "col": "value_date"
+        }
+      },
+      "sign": "as_is",
+      "source_id": "bank_mt940"
+    },
+    {
+      "description": "The platform's seller-payable ledger",
+      "filter": null,
+      "identity_key": [
+        "payable_id"
+      ],
+      "incremental": {
+        "column": null,
+        "lookback_days": 3,
+        "mode": "cdf"
+      },
+      "landing_table": "landing.seller_payables",
+      "mapping": {
+        "amount_minor": {
+          "col": "amount_minor"
+        },
+        "counterparty": {
+          "col": "seller_id"
+        },
+        "currency": {
+          "col": "currency"
+        },
+        "description": {
+          "col": "type"
+        },
+        "entity_id": {
+          "col": "entity_id"
+        },
+        "reference": {
+          "col": "transfer_group"
+        },
+        "reference_2": {
+          "col": "order_id"
+        },
+        "text_1": {
+          "col": "program"
+        },
+        "transaction_date": {
+          "args": [
+            {
+              "col": "created_at"
+            }
+          ],
+          "fn": "date_of"
+        }
+      },
+      "sign": "as_is",
+      "source_id": "seller_payables"
+    },
+    {
+      "description": "Seller payout items from the payout providers",
+      "filter": null,
+      "identity_key": [
+        "provider",
+        "payment_id"
+      ],
+      "incremental": {
+        "column": null,
+        "lookback_days": 3,
+        "mode": "cdf"
+      },
+      "landing_table": "landing.payout_items",
+      "mapping": {
+        "amount_minor": {
+          "args": [
+            {
+              "args": [
+                {
+                  "col": "amount"
+                }
+              ],
+              "fn": "parse_decimal"
+            },
+            {
+              "col": "currency"
+            }
+          ],
+          "fn": "to_minor_units"
+        },
+        "counterparty": {
+          "col": "seller_id"
+        },
+        "currency": {
+          "col": "currency"
+        },
+        "entity_id": {
+          "col": "entity_id"
+        },
+        "reference": {
+          "col": "client_payment_id"
+        },
+        "reference_2": {
+          "col": "payment_id"
+        },
+        "reference_3": {
+          "col": "batch_id"
+        },
+        "text_1": {
+          "col": "status"
+        },
+        "text_2": {
+          "col": "provider"
+        },
+        "transaction_date": {
+          "args": [
+            {
+              "col": "created_at"
+            }
+          ],
+          "fn": "date_of"
+        }
+      },
+      "sign": "as_is",
+      "source_id": "payout_items"
+    },
+    {
+      "description": "Shipping labels bought at a quoted price",
+      "filter": null,
+      "identity_key": [
+        "label_id"
+      ],
+      "incremental": {
+        "column": null,
+        "lookback_days": 3,
+        "mode": "cdf"
+      },
+      "landing_table": "landing.shipping_labels",
+      "mapping": {
+        "amount_minor": {
+          "col": "quoted_minor"
+        },
+        "currency": {
+          "col": "currency"
+        },
+        "entity_id": {
+          "col": "entity_id"
+        },
+        "number_1": {
+          "col": "weight_grams"
+        },
+        "reference": {
+          "col": "tracking_number"
+        },
+        "reference_2": {
+          "col": "order_id"
+        },
+        "text_1": {
+          "col": "leg"
+        },
+        "transaction_date": {
+          "col": "ship_date"
+        }
+      },
+      "sign": "as_is",
+      "source_id": "shipping_labels"
+    },
+    {
+      "description": "Carrier invoice lines, billed amounts",
+      "filter": null,
+      "identity_key": [
+        "invoice_id",
+        "line_id"
+      ],
+      "incremental": {
+        "column": null,
+        "lookback_days": 3,
+        "mode": "cdf"
+      },
+      "landing_table": "landing.carrier_invoice_lines",
+      "mapping": {
+        "amount_minor": {
+          "col": "billed_minor"
+        },
+        "currency": {
+          "col": "currency"
+        },
+        "entity_id": {
+          "args": [
+            {
+              "args": [
+                {
+                  "col": "account_number"
+                },
+                {
+                  "lit": "FDX-EU-200",
+                  "type": "string"
+                }
+              ],
+              "fn": "eq"
+            },
+            {
+              "lit": "EU01",
+              "type": "string"
+            },
+            {
+              "args": [
+                {
+                  "args": [
+                    {
+                      "col": "account_number"
+                    },
+                    {
+                      "lit": "FDX-UK-300",
+                      "type": "string"
+                    }
+                  ],
+                  "fn": "eq"
+                },
+                {
+                  "lit": "UK01",
+                  "type": "string"
+                },
+                {
+                  "args": [
+                    {
+                      "args": [
+                        {
+                          "col": "account_number"
+                        },
+                        {
+                          "lit": "FDX-US-100",
+                          "type": "string"
+                        }
+                      ],
+                      "fn": "eq"
+                    },
+                    {
+                      "lit": "US01",
+                      "type": "string"
+                    },
+                    {
+                      "lit": null,
+                      "type": "string"
+                    }
+                  ],
+                  "fn": "if"
+                }
+              ],
+              "fn": "if"
+            }
+          ],
+          "fn": "if"
+        },
+        "number_1": {
+          "col": "billed_weight_grams"
+        },
+        "reference": {
+          "col": "tracking_number"
+        },
+        "reference_2": {
+          "col": "invoice_id"
+        },
+        "text_1": {
+          "col": "charge_type"
+        },
+        "transaction_date": {
+          "col": "ship_date"
+        },
+        "value_date": {
+          "col": "invoice_date"
+        }
+      },
+      "sign": "as_is",
+      "source_id": "carrier_invoice_lines"
+    },
+    {
+      "description": "Committed tax documents from the tax engine",
+      "filter": {
+        "args": [
+          {
+            "col": "status"
+          },
+          {
+            "lit": "Committed",
+            "type": "string"
+          }
+        ],
+        "fn": "eq"
+      },
+      "identity_key": [
+        "document_code"
+      ],
+      "incremental": {
+        "column": null,
+        "lookback_days": 3,
+        "mode": "cdf"
+      },
+      "landing_table": "landing.tax_documents",
+      "mapping": {
+        "amount_minor": {
+          "args": [
+            {
+              "args": [
+                {
+                  "col": "total_tax"
+                }
+              ],
+              "fn": "parse_decimal"
+            },
+            {
+              "col": "currency"
+            }
+          ],
+          "fn": "to_minor_units"
+        },
+        "currency": {
+          "col": "currency"
+        },
+        "entity_id": {
+          "col": "entity_id"
+        },
+        "reference": {
+          "col": "document_code"
+        },
+        "text_1": {
+          "col": "jurisdiction"
+        },
+        "text_2": {
+          "col": "status"
+        },
+        "transaction_date": {
+          "col": "document_date"
+        }
+      },
+      "sign": "as_is",
+      "source_id": "tax_documents"
+    },
+    {
+      "description": "Sales tax remitted to the authorities",
+      "filter": null,
+      "identity_key": [
+        "remittance_id"
+      ],
+      "incremental": {
+        "column": null,
+        "lookback_days": 3,
+        "mode": "cdf"
+      },
+      "landing_table": "landing.tax_remittances",
+      "mapping": {
+        "amount_minor": {
+          "col": "amount_minor"
+        },
+        "currency": {
+          "col": "currency"
+        },
+        "entity_id": {
+          "col": "entity_id"
+        },
+        "reference": {
+          "col": "remittance_id"
+        },
+        "text_1": {
+          "col": "jurisdiction"
+        },
+        "text_2": {
+          "col": "period"
+        },
+        "transaction_date": {
+          "col": "paid_date"
+        }
+      },
+      "sign": "as_is",
+      "source_id": "tax_remittances"
+    }
+  ]
+}

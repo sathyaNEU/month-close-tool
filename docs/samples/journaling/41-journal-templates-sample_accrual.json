@@ -1,0 +1,60 @@
+{
+  "_sample": "SAMPLE configuration for testing, not your company's accounting (docs/domain/sample-journal-rules.md)",
+  "body": {
+    "effective_from": "2026-06-01",
+    "spec": {
+      "allowed_accounts": {
+        "account_types": [
+          "expense"
+        ],
+        "codes": [],
+        "ranges": [
+          {
+            "first": "2310",
+            "last": "2430"
+          }
+        ]
+      },
+      "attachment_required_from_minor": null,
+      "auto_reverse": true,
+      "currencies": [],
+      "description": "An expense accrued against a liability, reversed on the first day of the next period.",
+      "header_columns": [
+        {
+          "allowed_values": [
+            "carrier",
+            "marketing",
+            "fees",
+            "reserve",
+            "other"
+          ],
+          "column_id": "accrual_type",
+          "data_type": "string",
+          "default": null,
+          "label": "Accrual type",
+          "max_length": 500,
+          "non_negative": false,
+          "read_only": false,
+          "required": true
+        },
+        {
+          "allowed_values": [],
+          "column_id": "reference",
+          "data_type": "string",
+          "default": null,
+          "label": "Reference",
+          "max_length": 50,
+          "non_negative": false,
+          "read_only": false,
+          "required": false
+        }
+      ],
+      "line_columns": [],
+      "max_lines": 500,
+      "min_description_length": 15,
+      "name": "Accrual (reverses next period)",
+      "template_id": "sample_accrual"
+    }
+  },
+  "resource": "journal-templates"
+}

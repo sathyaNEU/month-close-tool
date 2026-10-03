@@ -1,0 +1,44 @@
+{
+  "_sample": "SAMPLE configuration for testing, not your company's accounting (docs/domain/sample-journal-rules.md)",
+  "body": {
+    "effective_from": "2026-06-01",
+    "spec": {
+      "amounts": [
+        "amount"
+      ],
+      "attributes": [
+        "jurisdiction"
+      ],
+      "description": "Sales tax paid to a tax authority",
+      "event_type": "TAX_REMITTED",
+      "identities": [],
+      "sources": [
+        {
+          "filter": null,
+          "landing_table": "landing.tax_remittances",
+          "lookups": [],
+          "mapping": {
+            "accounting_date": {
+              "col": "paid_date"
+            },
+            "amount_amount": {
+              "col": "amount_minor"
+            },
+            "attr_jurisdiction": {
+              "col": "jurisdiction"
+            },
+            "currency": {
+              "col": "currency"
+            },
+            "entity_id": {
+              "col": "entity_id"
+            }
+          },
+          "source_id": "tax_remittances"
+        }
+      ],
+      "type_id": "sample_tax_remitted"
+    }
+  },
+  "resource": "event-types"
+}

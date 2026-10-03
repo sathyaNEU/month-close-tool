@@ -1,0 +1,15 @@
+# Spike S1 (Stage 1b): Unity Catalog OSS 0.6.0, for the engine's catalog code paths (make uc-spike).
+# Its own Compose project, published on 127.0.0.1 only while the spike runs. Managed tables need a
+# storage root that the Spark client (on the host) and the server see at the same path, so the host
+# directory is mounted at its own absolute path; tools/run_uc_spike.py writes server.properties.
+name: close-uc
+
+services:
+  unitycatalog:
+    image: unitycatalog/unitycatalog:v0.6.0@sha256:606349a178d99c3b42d9c9c8cfea72f04efb3cfc350ee89eec45368b96e50086
+    ports:
+      - "127.0.0.1:18080:8080"
+    volumes:
+      - ${UC_SPIKE_ROOT:?set by tools/run_uc_spike.py}/server.properties:/home/unitycatalog/etc/conf/server.properties:ro
+      - ${UC_SPIKE_ROOT:?set by tools/run_uc_spike.py}/storage:${UC_SPIKE_ROOT:?set by tools/run_uc_spike.py}/storage
+    mem_limit: 768m

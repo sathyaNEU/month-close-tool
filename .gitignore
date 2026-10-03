@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+
+# Spark / Delta local artefacts
+spark-warehouse/
+metastore_db/
+derby.log
+*.crc
+
+# Local secrets, generated at bootstrap (never commit)
+.local/
+.env
+.env.*
+
+# Editors / OS
+.idea/
+.vscode/
+.DS_Store
+
+# Research stays private (the repository is public): the BlackLine research report and its notes
+reports/
+research_notes/

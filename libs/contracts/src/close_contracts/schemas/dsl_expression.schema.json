@@ -1,0 +1,109 @@
+{
+  "$defs": {
+    "Call": {
+      "additionalProperties": false,
+      "properties": {
+        "args": {
+          "default": [],
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/Col"
+              },
+              {
+                "$ref": "#/$defs/Lit"
+              },
+              {
+                "$ref": "#/$defs/Call"
+              }
+            ]
+          },
+          "maxItems": 64,
+          "title": "Args",
+          "type": "array"
+        },
+        "fn": {
+          "pattern": "^[a-z][a-z0-9_]{0,63}$",
+          "title": "Fn",
+          "type": "string"
+        }
+      },
+      "required": [
+        "fn"
+      ],
+      "title": "Call",
+      "type": "object"
+    },
+    "Col": {
+      "additionalProperties": false,
+      "properties": {
+        "col": {
+          "pattern": "^(?:[abc]\\.)?[A-Za-z_][A-Za-z0-9_]{0,127}$",
+          "title": "Col",
+          "type": "string"
+        }
+      },
+      "required": [
+        "col"
+      ],
+      "title": "Col",
+      "type": "object"
+    },
+    "DslType": {
+      "enum": [
+        "string",
+        "bigint",
+        "boolean",
+        "date",
+        "timestamp",
+        "decimal"
+      ],
+      "title": "DslType",
+      "type": "string"
+    },
+    "Lit": {
+      "additionalProperties": false,
+      "properties": {
+        "lit": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "maximum": 9007199254740991,
+              "minimum": -9007199254740991,
+              "type": "integer"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Lit"
+        },
+        "type": {
+          "$ref": "#/$defs/DslType"
+        }
+      },
+      "required": [
+        "lit",
+        "type"
+      ],
+      "title": "Lit",
+      "type": "object"
+    }
+  },
+  "oneOf": [
+    {
+      "$ref": "#/$defs/Col"
+    },
+    {
+      "$ref": "#/$defs/Lit"
+    },
+    {
+      "$ref": "#/$defs/Call"
+    }
+  ]
+}

@@ -1,0 +1,317 @@
+{
+  "$defs": {
+    "AccountRef": {
+      "additionalProperties": false,
+      "description": "A literal account, or an account looked up in a mapping by key expressions.",
+      "properties": {
+        "account": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Za-z0-9._-]{1,32}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Account"
+        },
+        "keys": {
+          "default": [],
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/Col"
+              },
+              {
+                "$ref": "#/$defs/Lit"
+              },
+              {
+                "$ref": "#/$defs/Call"
+              }
+            ]
+          },
+          "maxItems": 6,
+          "title": "Keys",
+          "type": "array"
+        },
+        "mapping": {
+          "anyOf": [
+            {
+              "pattern": "^[a-z][a-z0-9_]{2,63}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mapping"
+        }
+      },
+      "title": "AccountRef",
+      "type": "object"
+    },
+    "Call": {
+      "additionalProperties": false,
+      "properties": {
+        "args": {
+          "default": [],
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/Col"
+              },
+              {
+                "$ref": "#/$defs/Lit"
+              },
+              {
+                "$ref": "#/$defs/Call"
+              }
+            ]
+          },
+          "maxItems": 64,
+          "title": "Args",
+          "type": "array"
+        },
+        "fn": {
+          "pattern": "^[a-z][a-z0-9_]{0,63}$",
+          "title": "Fn",
+          "type": "string"
+        }
+      },
+      "required": [
+        "fn"
+      ],
+      "title": "Call",
+      "type": "object"
+    },
+    "Col": {
+      "additionalProperties": false,
+      "properties": {
+        "col": {
+          "pattern": "^(?:[abc]\\.)?[A-Za-z_][A-Za-z0-9_]{0,127}$",
+          "title": "Col",
+          "type": "string"
+        }
+      },
+      "required": [
+        "col"
+      ],
+      "title": "Col",
+      "type": "object"
+    },
+    "DslType": {
+      "enum": [
+        "string",
+        "bigint",
+        "boolean",
+        "date",
+        "timestamp",
+        "decimal"
+      ],
+      "title": "DslType",
+      "type": "string"
+    },
+    "LineTemplate": {
+      "additionalProperties": false,
+      "properties": {
+        "account": {
+          "$ref": "#/$defs/AccountRef"
+        },
+        "amount": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/Col"
+            },
+            {
+              "$ref": "#/$defs/Lit"
+            },
+            {
+              "$ref": "#/$defs/Call"
+            }
+          ],
+          "title": "Amount"
+        },
+        "condition": {
+          "anyOf": [
+            {
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/Col"
+                },
+                {
+                  "$ref": "#/$defs/Lit"
+                },
+                {
+                  "$ref": "#/$defs/Call"
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Condition"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/Col"
+                },
+                {
+                  "$ref": "#/$defs/Lit"
+                },
+                {
+                  "$ref": "#/$defs/Call"
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description"
+        },
+        "dimensions": {
+          "additionalProperties": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/Col"
+              },
+              {
+                "$ref": "#/$defs/Lit"
+              },
+              {
+                "$ref": "#/$defs/Call"
+              }
+            ]
+          },
+          "title": "Dimensions",
+          "type": "object"
+        },
+        "line_id": {
+          "pattern": "^[a-z][a-z0-9_]{0,40}$",
+          "title": "Line Id",
+          "type": "string"
+        },
+        "side": {
+          "enum": [
+            "DR",
+            "CR"
+          ],
+          "title": "Side",
+          "type": "string"
+        }
+      },
+      "required": [
+        "line_id",
+        "side",
+        "account",
+        "amount"
+      ],
+      "title": "LineTemplate",
+      "type": "object"
+    },
+    "Lit": {
+      "additionalProperties": false,
+      "properties": {
+        "lit": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "maximum": 9007199254740991,
+              "minimum": -9007199254740991,
+              "type": "integer"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Lit"
+        },
+        "type": {
+          "$ref": "#/$defs/DslType"
+        }
+      },
+      "required": [
+        "lit",
+        "type"
+      ],
+      "title": "Lit",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "condition": {
+      "anyOf": [
+        {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/Col"
+            },
+            {
+              "$ref": "#/$defs/Lit"
+            },
+            {
+              "$ref": "#/$defs/Call"
+            }
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Condition"
+    },
+    "definition_id": {
+      "pattern": "^[a-z][a-z0-9_]{2,63}$",
+      "title": "Definition Id",
+      "type": "string"
+    },
+    "event_types": {
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 20,
+      "minItems": 1,
+      "title": "Event Types",
+      "type": "array"
+    },
+    "lines": {
+      "items": {
+        "$ref": "#/$defs/LineTemplate"
+      },
+      "maxItems": 40,
+      "minItems": 2,
+      "title": "Lines",
+      "type": "array"
+    },
+    "name": {
+      "maxLength": 200,
+      "minLength": 1,
+      "title": "Name",
+      "type": "string"
+    }
+  },
+  "required": [
+    "definition_id",
+    "name",
+    "event_types",
+    "lines"
+  ],
+  "title": "AutoJournalDefinition",
+  "type": "object"
+}

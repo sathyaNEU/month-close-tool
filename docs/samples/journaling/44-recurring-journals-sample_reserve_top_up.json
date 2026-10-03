@@ -1,0 +1,41 @@
+{
+  "_sample": "SAMPLE configuration for testing, not your company's accounting (docs/domain/sample-journal-rules.md)",
+  "body": {
+    "effective_from": "2026-06-01",
+    "spec": {
+      "auto_approve": true,
+      "currency": null,
+      "day": 28,
+      "description": "Monthly chargeback reserve top-up",
+      "entity_id": "US01",
+      "first_period": "2026-07",
+      "frequency": "monthly",
+      "header": {
+        "reference": "RESERVE-TOPUP"
+      },
+      "last_period": null,
+      "lines": [
+        {
+          "account": "6040",
+          "amount_minor": 250000,
+          "description": "Chargeback losses",
+          "dimensions": {},
+          "side": "DR",
+          "values": {}
+        },
+        {
+          "account": "2310",
+          "amount_minor": 250000,
+          "description": "Chargeback reserve",
+          "dimensions": {},
+          "side": "CR",
+          "values": {}
+        }
+      ],
+      "preparer": "1001",
+      "recurring_id": "sample_reserve_top_up",
+      "template_id": "sample_standard_journal"
+    }
+  },
+  "resource": "recurring-journals"
+}

@@ -1,0 +1,69 @@
+{
+  "_sample": "SAMPLE configuration for testing, not your company's accounting (docs/domain/sample-journal-rules.md)",
+  "body": {
+    "effective_from": "2026-06-01",
+    "spec": {
+      "accounts": {
+        "9999": {
+          "amounts": {
+            "EUR": 0,
+            "GBP": 0,
+            "USD": 0
+          },
+          "operator": "or",
+          "percent": "0"
+        }
+      },
+      "basis": "prior_period",
+      "by_type": {
+        "asset": {
+          "amounts": {
+            "EUR": 1000000,
+            "GBP": 800000,
+            "USD": 1000000
+          },
+          "operator": "and",
+          "percent": "10"
+        },
+        "equity": {
+          "amounts": {
+            "EUR": 1000000,
+            "GBP": 800000,
+            "USD": 1000000
+          },
+          "operator": "and",
+          "percent": "10"
+        },
+        "expense": {
+          "amounts": {
+            "EUR": 500000,
+            "GBP": 400000,
+            "USD": 500000
+          },
+          "operator": "and",
+          "percent": "10"
+        },
+        "liability": {
+          "amounts": {
+            "EUR": 1000000,
+            "GBP": 800000,
+            "USD": 1000000
+          },
+          "operator": "and",
+          "percent": "10"
+        },
+        "revenue": {
+          "amounts": {
+            "EUR": 500000,
+            "GBP": 400000,
+            "USD": 500000
+          },
+          "operator": "and",
+          "percent": "10"
+        }
+      },
+      "rules_id": "sample_flux_rules"
+    }
+  },
+  "resource": "flux-rules"
+}

@@ -1,0 +1,47 @@
+{
+  "_sample": "SAMPLE configuration for testing, not your company's accounting (docs/domain/sample-journal-rules.md)",
+  "body": {
+    "effective_from": "2026-06-01",
+    "spec": {
+      "condition": null,
+      "definition_id": "sample_payout_funding",
+      "event_types": [
+        "PAYOUT_FUNDING"
+      ],
+      "lines": [
+        {
+          "account": {
+            "account": "1130",
+            "keys": [],
+            "mapping": null
+          },
+          "amount": {
+            "col": "amount_amount"
+          },
+          "condition": null,
+          "description": null,
+          "dimensions": {},
+          "line_id": "provider",
+          "side": "DR"
+        },
+        {
+          "account": {
+            "account": "1010",
+            "keys": [],
+            "mapping": null
+          },
+          "amount": {
+            "col": "amount_amount"
+          },
+          "condition": null,
+          "description": null,
+          "dimensions": {},
+          "line_id": "cash",
+          "side": "CR"
+        }
+      ],
+      "name": "The platform funds the payout provider"
+    }
+  },
+  "resource": "auto-journal-definitions"
+}

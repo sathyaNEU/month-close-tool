@@ -1,0 +1,342 @@
+{
+  "$defs": {
+    "Call": {
+      "additionalProperties": false,
+      "properties": {
+        "args": {
+          "default": [],
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/Col"
+              },
+              {
+                "$ref": "#/$defs/Lit"
+              },
+              {
+                "$ref": "#/$defs/Call"
+              }
+            ]
+          },
+          "maxItems": 64,
+          "title": "Args",
+          "type": "array"
+        },
+        "fn": {
+          "pattern": "^[a-z][a-z0-9_]{0,63}$",
+          "title": "Fn",
+          "type": "string"
+        }
+      },
+      "required": [
+        "fn"
+      ],
+      "title": "Call",
+      "type": "object"
+    },
+    "Col": {
+      "additionalProperties": false,
+      "properties": {
+        "col": {
+          "pattern": "^(?:[abc]\\.)?[A-Za-z_][A-Za-z0-9_]{0,127}$",
+          "title": "Col",
+          "type": "string"
+        }
+      },
+      "required": [
+        "col"
+      ],
+      "title": "Col",
+      "type": "object"
+    },
+    "ConfigKind": {
+      "enum": [
+        "data_source",
+        "match_set",
+        "accounting_policy",
+        "event_type",
+        "auto_journal_definition",
+        "account_mapping",
+        "chart_of_accounts",
+        "dimension_set",
+        "entity_set",
+        "journal_template",
+        "approval_matrix",
+        "recurring_journal",
+        "close_checklist",
+        "flux_rules"
+      ],
+      "title": "ConfigKind",
+      "type": "string"
+    },
+    "ConfigStatus": {
+      "enum": [
+        "draft",
+        "submitted",
+        "approved",
+        "active",
+        "retired"
+      ],
+      "title": "ConfigStatus",
+      "type": "string"
+    },
+    "DataSource": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "default": "",
+          "maxLength": 500,
+          "title": "Description",
+          "type": "string"
+        },
+        "filter": {
+          "anyOf": [
+            {
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/Col"
+                },
+                {
+                  "$ref": "#/$defs/Lit"
+                },
+                {
+                  "$ref": "#/$defs/Call"
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Filter"
+        },
+        "identity_key": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 8,
+          "minItems": 1,
+          "title": "Identity Key",
+          "type": "array"
+        },
+        "incremental": {
+          "$ref": "#/$defs/Incremental",
+          "default": {
+            "column": null,
+            "lookback_days": 3,
+            "mode": "cdf"
+          }
+        },
+        "landing_table": {
+          "pattern": "^landing\\.[a-z][a-z0-9_]{0,62}$",
+          "title": "Landing Table",
+          "type": "string"
+        },
+        "mapping": {
+          "additionalProperties": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/Col"
+              },
+              {
+                "$ref": "#/$defs/Lit"
+              },
+              {
+                "$ref": "#/$defs/Call"
+              }
+            ]
+          },
+          "maxProperties": 64,
+          "minProperties": 1,
+          "title": "Mapping",
+          "type": "object"
+        },
+        "sign": {
+          "$ref": "#/$defs/SignConvention",
+          "default": "as_is"
+        },
+        "source_id": {
+          "pattern": "^[a-z][a-z0-9_]{2,63}$",
+          "title": "Source Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_id",
+        "landing_table",
+        "identity_key",
+        "mapping"
+      ],
+      "title": "DataSource",
+      "type": "object"
+    },
+    "DslType": {
+      "enum": [
+        "string",
+        "bigint",
+        "boolean",
+        "date",
+        "timestamp",
+        "decimal"
+      ],
+      "title": "DslType",
+      "type": "string"
+    },
+    "Incremental": {
+      "additionalProperties": false,
+      "properties": {
+        "column": {
+          "anyOf": [
+            {
+              "pattern": "^(?:[abc]\\.)?[A-Za-z_][A-Za-z0-9_]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Column"
+        },
+        "lookback_days": {
+          "default": 3,
+          "maximum": 90,
+          "minimum": 0,
+          "title": "Lookback Days",
+          "type": "integer"
+        },
+        "mode": {
+          "enum": [
+            "cdf",
+            "column"
+          ],
+          "title": "Mode",
+          "type": "string"
+        }
+      },
+      "required": [
+        "mode"
+      ],
+      "title": "Incremental",
+      "type": "object"
+    },
+    "Lit": {
+      "additionalProperties": false,
+      "properties": {
+        "lit": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "maximum": 9007199254740991,
+              "minimum": -9007199254740991,
+              "type": "integer"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Lit"
+        },
+        "type": {
+          "$ref": "#/$defs/DslType"
+        }
+      },
+      "required": [
+        "lit",
+        "type"
+      ],
+      "title": "Lit",
+      "type": "object"
+    },
+    "SignConvention": {
+      "enum": [
+        "as_is",
+        "negate"
+      ],
+      "title": "SignConvention",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "approver": {
+      "anyOf": [
+        {
+          "pattern": "^[A-Za-z0-9._@-]{1,128}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Approver"
+    },
+    "author": {
+      "pattern": "^[A-Za-z0-9._@-]{1,128}$",
+      "title": "Author",
+      "type": "string"
+    },
+    "config_id": {
+      "pattern": "^[a-z][a-z0-9_]{2,63}$",
+      "title": "Config Id",
+      "type": "string"
+    },
+    "content_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Content Hash",
+      "type": "string"
+    },
+    "effective_from": {
+      "format": "date",
+      "title": "Effective From",
+      "type": "string"
+    },
+    "effective_to": {
+      "anyOf": [
+        {
+          "format": "date",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Effective To"
+    },
+    "kind": {
+      "$ref": "#/$defs/ConfigKind"
+    },
+    "spec": {
+      "$ref": "#/$defs/DataSource"
+    },
+    "status": {
+      "$ref": "#/$defs/ConfigStatus"
+    },
+    "version": {
+      "maximum": 2147483647,
+      "minimum": 1,
+      "title": "Version",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "kind",
+    "config_id",
+    "version",
+    "status",
+    "effective_from",
+    "author",
+    "content_hash",
+    "spec"
+  ],
+  "title": "Envelope[DataSource]",
+  "type": "object"
+}

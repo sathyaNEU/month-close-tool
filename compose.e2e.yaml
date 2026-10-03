@@ -1,0 +1,18 @@
+# Timing and fault-injection overrides for the end-to-end suite (tests/e2e), layered on compose.yaml:
+#   docker compose -f compose.yaml -f compose.e2e.yaml up -d --wait     (make test-e2e does this)
+# `make up` stays production-shaped. These only shorten waits the suite would otherwise sit through,
+# and give every job a pause point the suite can hold or release through files in .local/faults.
+services:
+  app:
+    environment: &e2e-app
+      CLOSE_QUARANTINE_S: "5"  # an emulator restart mid-run ends INTERNAL_ERROR; do not hold 10 minutes
+      CLOSE_POLL_INTERVAL_S: "1"
+      CLOSE_LOG_LEVELS: close_platform.scheduler=DEBUG  # one line per claimed tick, for the HA checks
+  app2:
+    environment: *e2e-app
+  jobs:
+    environment:
+      EMULATOR_ALLOW_FAULTS: "1"  # the /__emulator/* switches exist only in this overlay
+      # A job waits at a point until its release file exists; the suite keeps both files present
+      # except while it holds a run there.
+      CLOSE_FAULTS: after_claim=/faults/after_claim,before_commit=/faults/before_commit,after_lines_commit=/faults/after_lines_commit

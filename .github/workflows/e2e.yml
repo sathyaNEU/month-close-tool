@@ -1,0 +1,47 @@
+# End to end: the whole local stack in Docker Compose on a runner, the smoke flow, then the
+# fault-injection suite (the same `make` targets as Gate 1a/1b).
+# Status: not yet executed. The repository has no GitHub remote yet; this runs on `main` and on demand
+# once it does. Same hardening as ci.yml: SHA-pinned actions, no token permissions, no persisted
+# credentials.
+name: e2e
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  stack:
+    name: compose stack, smoke, fault injection
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          version: "0.12.19"
+          enable-cache: false
+      - run: uv sync --all-packages --locked
+      - run: make secrets
+      - run: make up
+      - run: make smoke
+      - run: make test-e2e
+      - name: collect container logs
+        if: failure()
+        run: docker compose logs --no-color > compose-logs.txt
+      - if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: compose-logs
+          path: compose-logs.txt
+          retention-days: 7

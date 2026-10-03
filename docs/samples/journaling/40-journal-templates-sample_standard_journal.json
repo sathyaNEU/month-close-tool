@@ -1,0 +1,36 @@
+{
+  "_sample": "SAMPLE configuration for testing, not your company's accounting (docs/domain/sample-journal-rules.md)",
+  "body": {
+    "effective_from": "2026-06-01",
+    "spec": {
+      "allowed_accounts": {
+        "account_types": [],
+        "codes": [],
+        "ranges": []
+      },
+      "attachment_required_from_minor": 5000000,
+      "auto_reverse": false,
+      "currencies": [],
+      "description": "Any balanced adjustment. An attachment is required from 50,000.",
+      "header_columns": [
+        {
+          "allowed_values": [],
+          "column_id": "reference",
+          "data_type": "string",
+          "default": null,
+          "label": "Reference",
+          "max_length": 50,
+          "non_negative": false,
+          "read_only": false,
+          "required": false
+        }
+      ],
+      "line_columns": [],
+      "max_lines": 500,
+      "min_description_length": 10,
+      "name": "Standard journal",
+      "template_id": "sample_standard_journal"
+    }
+  },
+  "resource": "journal-templates"
+}

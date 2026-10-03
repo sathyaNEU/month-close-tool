@@ -1,0 +1,112 @@
+{
+  "_sample": "SAMPLE configuration for testing, not your company's accounting (docs/domain/sample-journal-rules.md)",
+  "body": {
+    "effective_from": "2026-06-01",
+    "spec": {
+      "amounts": [
+        "amount"
+      ],
+      "attributes": [
+        "charge_type",
+        "carrier"
+      ],
+      "description": "A carrier invoice line: the billed transportation, or a correction billed on top",
+      "event_type": "CARRIER_CHARGE",
+      "identities": [],
+      "sources": [
+        {
+          "filter": null,
+          "landing_table": "landing.carrier_invoice_lines",
+          "lookups": [],
+          "mapping": {
+            "accounting_date": {
+              "col": "invoice_date"
+            },
+            "amount_amount": {
+              "col": "billed_minor"
+            },
+            "attr_carrier": {
+              "col": "carrier"
+            },
+            "attr_charge_type": {
+              "col": "charge_type"
+            },
+            "currency": {
+              "col": "currency"
+            },
+            "entity_id": {
+              "args": [
+                {
+                  "args": [
+                    {
+                      "col": "account_number"
+                    },
+                    {
+                      "lit": "FDX-EU-200",
+                      "type": "string"
+                    }
+                  ],
+                  "fn": "eq"
+                },
+                {
+                  "lit": "EU01",
+                  "type": "string"
+                },
+                {
+                  "args": [
+                    {
+                      "args": [
+                        {
+                          "col": "account_number"
+                        },
+                        {
+                          "lit": "FDX-UK-300",
+                          "type": "string"
+                        }
+                      ],
+                      "fn": "eq"
+                    },
+                    {
+                      "lit": "UK01",
+                      "type": "string"
+                    },
+                    {
+                      "args": [
+                        {
+                          "args": [
+                            {
+                              "col": "account_number"
+                            },
+                            {
+                              "lit": "FDX-US-100",
+                              "type": "string"
+                            }
+                          ],
+                          "fn": "eq"
+                        },
+                        {
+                          "lit": "US01",
+                          "type": "string"
+                        },
+                        {
+                          "lit": null,
+                          "type": "string"
+                        }
+                      ],
+                      "fn": "if"
+                    }
+                  ],
+                  "fn": "if"
+                }
+              ],
+              "fn": "if"
+            }
+          },
+          "source_id": "carrier_invoice_lines"
+        }
+      ],
+      "type_id": "sample_carrier_charge"
+    }
+  },
+  "resource": "event-types"
+}

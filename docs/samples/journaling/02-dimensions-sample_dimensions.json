@@ -1,0 +1,65 @@
+{
+  "_sample": "SAMPLE configuration for testing, not your company's accounting (docs/domain/sample-journal-rules.md)",
+  "body": {
+    "effective_from": "2026-06-01",
+    "spec": {
+      "dimension_set_id": "sample_dimensions",
+      "dimensions": [
+        {
+          "code": "program",
+          "name": "Marketplace program",
+          "open_values": false,
+          "required_accounts": [],
+          "required_on": [
+            "revenue"
+          ],
+          "values": [
+            {
+              "code": "verified_marketplace",
+              "name": "Verified Marketplace",
+              "status": "active"
+            },
+            {
+              "code": "direct_ship",
+              "name": "Direct Ship",
+              "status": "active"
+            },
+            {
+              "code": "consignment",
+              "name": "Consignment",
+              "status": "active"
+            },
+            {
+              "code": "listings",
+              "name": "Listings",
+              "status": "active"
+            }
+          ]
+        },
+        {
+          "code": "psp",
+          "name": "Payment provider",
+          "open_values": false,
+          "required_accounts": [
+            "1110",
+            "1120"
+          ],
+          "required_on": [],
+          "values": [
+            {
+              "code": "stripe",
+              "name": "Stripe",
+              "status": "active"
+            },
+            {
+              "code": "adyen",
+              "name": "Adyen",
+              "status": "active"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "resource": "dimensions"
+}

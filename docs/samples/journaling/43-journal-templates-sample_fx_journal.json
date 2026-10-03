@@ -1,0 +1,40 @@
+{
+  "_sample": "SAMPLE configuration for testing, not your company's accounting (docs/domain/sample-journal-rules.md)",
+  "body": {
+    "effective_from": "2026-06-01",
+    "spec": {
+      "allowed_accounts": {
+        "account_types": [],
+        "codes": [],
+        "ranges": []
+      },
+      "attachment_required_from_minor": null,
+      "auto_reverse": false,
+      "currencies": [
+        "EUR",
+        "GBP",
+        "USD"
+      ],
+      "description": "A balanced adjustment entered in euros, pounds or dollars, converted to the entity's functional currency at the accounting date's daily spot rate when it is submitted (Stage 7c).",
+      "header_columns": [
+        {
+          "allowed_values": [],
+          "column_id": "reference",
+          "data_type": "string",
+          "default": null,
+          "label": "Reference",
+          "max_length": 50,
+          "non_negative": false,
+          "read_only": false,
+          "required": false
+        }
+      ],
+      "line_columns": [],
+      "max_lines": 500,
+      "min_description_length": 10,
+      "name": "Foreign-currency journal",
+      "template_id": "sample_fx_journal"
+    }
+  },
+  "resource": "journal-templates"
+}

@@ -1,0 +1,139 @@
+{
+  "_sample": "SAMPLE configuration for testing, not your company's accounting (docs/domain/sample-journal-rules.md)",
+  "body": {
+    "effective_from": "2026-06-01",
+    "spec": {
+      "checklist_id": "sample_month_end_close",
+      "name": "Month-end close (sample)",
+      "reminders": {
+        "escalate_after_days": 2
+      },
+      "tasks": [
+        {
+          "check": null,
+          "depends_on": [],
+          "due_day": -1,
+          "entities": [
+            "US01"
+          ],
+          "instructions": "Confirm every label bought in the period is in the carrier extract before the period ends.",
+          "name": "Cut off shipping labels",
+          "preparer": "1001",
+          "reviewer": "1004",
+          "task_id": "shipping_label_cutoff"
+        },
+        {
+          "check": "journals_settled",
+          "depends_on": [],
+          "due_day": 1,
+          "entities": [],
+          "instructions": "No journal dated in the period is waiting for approval or posting.",
+          "name": "Every journal approved and posted",
+          "preparer": null,
+          "reviewer": null,
+          "task_id": "journals_settled"
+        },
+        {
+          "check": null,
+          "depends_on": [],
+          "due_day": 1,
+          "entities": [
+            "US01"
+          ],
+          "instructions": "Accrue carrier invoices not yet received, from the label count (template sample_accrual).",
+          "name": "Book the carrier cost accrual",
+          "preparer": "1001",
+          "reviewer": "1005",
+          "task_id": "carrier_accrual"
+        },
+        {
+          "check": null,
+          "depends_on": [
+            "journals_settled"
+          ],
+          "due_day": 2,
+          "entities": [
+            "US01"
+          ],
+          "instructions": "Compare seller payables (2010) with the payout schedule and explain any gap.",
+          "name": "Review seller payables",
+          "preparer": "1001",
+          "reviewer": "1004",
+          "task_id": "seller_payables_review"
+        },
+        {
+          "check": "suspense_clear",
+          "depends_on": [
+            "journals_settled"
+          ],
+          "due_day": 2,
+          "entities": [],
+          "instructions": "The suspense account (9999) has no balance for the period.",
+          "name": "Suspense account cleared",
+          "preparer": null,
+          "reviewer": null,
+          "task_id": "suspense_clear"
+        },
+        {
+          "check": "gl_balanced",
+          "depends_on": [
+            "journals_settled"
+          ],
+          "due_day": 2,
+          "entities": [],
+          "instructions": "",
+          "name": "Trial balance balances",
+          "preparer": null,
+          "reviewer": null,
+          "task_id": "gl_balanced"
+        },
+        {
+          "check": "erp_ties",
+          "depends_on": [
+            "gl_balanced",
+            "suspense_clear"
+          ],
+          "due_day": 3,
+          "entities": [],
+          "instructions": "Upload the ERP's trial balance first; every account must tie.",
+          "name": "The Databricks GL ties to the ERP",
+          "preparer": null,
+          "reviewer": null,
+          "task_id": "erp_ties"
+        },
+        {
+          "check": "flux_reviewed",
+          "depends_on": [
+            "erp_ties"
+          ],
+          "due_day": 4,
+          "entities": [],
+          "instructions": "",
+          "name": "Flux explained and reviewed",
+          "preparer": null,
+          "reviewer": null,
+          "task_id": "flux_reviewed"
+        },
+        {
+          "check": null,
+          "depends_on": [
+            "shipping_label_cutoff",
+            "carrier_accrual",
+            "seller_payables_review",
+            "flux_reviewed"
+          ],
+          "due_day": 5,
+          "entities": [
+            "US01"
+          ],
+          "instructions": "Every task is done and the period can close.",
+          "name": "Controller's close sign-off",
+          "preparer": "1004",
+          "reviewer": "1005",
+          "task_id": "controller_sign_off"
+        }
+      ]
+    }
+  },
+  "resource": "close-checklists"
+}

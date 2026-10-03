@@ -1,0 +1,74 @@
+{
+  "_sample": "SAMPLE configuration for testing, not your company's accounting (docs/domain/sample-journal-rules.md)",
+  "body": {
+    "effective_from": "2026-06-01",
+    "spec": {
+      "amounts": [
+        "penalty"
+      ],
+      "attributes": [],
+      "description": "A penalty charged to a seller after failed verification",
+      "event_type": "SELLER_CHARGE",
+      "identities": [],
+      "sources": [
+        {
+          "filter": {
+            "args": [
+              {
+                "col": "event_type"
+              },
+              {
+                "lit": "seller_charge_assessed",
+                "type": "string"
+              }
+            ],
+            "fn": "eq"
+          },
+          "landing_table": "landing.order_events",
+          "lookups": [
+            {
+              "alias": "order",
+              "on": {
+                "order_id": {
+                  "col": "order_id"
+                }
+              },
+              "table": "landing.orders"
+            }
+          ],
+          "mapping": {
+            "accounting_date": {
+              "args": [
+                {
+                  "col": "occurred_at"
+                }
+              ],
+              "fn": "date_of"
+            },
+            "amount_penalty": {
+              "col": "amount_minor"
+            },
+            "currency": {
+              "col": "order_currency"
+            },
+            "entity_id": {
+              "col": "entity_id"
+            },
+            "order_id": {
+              "col": "order_id"
+            },
+            "program": {
+              "col": "order_program"
+            },
+            "seller_id": {
+              "col": "order_seller_id"
+            }
+          },
+          "source_id": "order_events"
+        }
+      ],
+      "type_id": "sample_seller_charge"
+    }
+  },
+  "resource": "event-types"
+}

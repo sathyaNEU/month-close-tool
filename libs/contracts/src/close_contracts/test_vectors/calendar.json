@@ -1,0 +1,202 @@
+{
+  "code": "TEST_US",
+  "holidays": [
+    "2025-12-25",
+    "2026-01-01",
+    "2026-01-19",
+    "2026-07-03",
+    "2026-12-25"
+  ],
+  "weekend": [
+    5,
+    6
+  ],
+  "cases": [
+    {
+      "date": "2025-12-20",
+      "is_business_day": false,
+      "bd_index_following": 6775,
+      "bd_index_preceding": 6774
+    },
+    {
+      "date": "2025-12-21",
+      "is_business_day": false,
+      "bd_index_following": 6775,
+      "bd_index_preceding": 6774
+    },
+    {
+      "date": "2025-12-22",
+      "is_business_day": true,
+      "bd_index_following": 6775,
+      "bd_index_preceding": 6775
+    },
+    {
+      "date": "2025-12-23",
+      "is_business_day": true,
+      "bd_index_following": 6776,
+      "bd_index_preceding": 6776
+    },
+    {
+      "date": "2025-12-24",
+      "is_business_day": true,
+      "bd_index_following": 6777,
+      "bd_index_preceding": 6777
+    },
+    {
+      "date": "2025-12-25",
+      "is_business_day": false,
+      "bd_index_following": 6778,
+      "bd_index_preceding": 6777
+    },
+    {
+      "date": "2025-12-26",
+      "is_business_day": true,
+      "bd_index_following": 6778,
+      "bd_index_preceding": 6778
+    },
+    {
+      "date": "2025-12-27",
+      "is_business_day": false,
+      "bd_index_following": 6779,
+      "bd_index_preceding": 6778
+    },
+    {
+      "date": "2025-12-28",
+      "is_business_day": false,
+      "bd_index_following": 6779,
+      "bd_index_preceding": 6778
+    },
+    {
+      "date": "2025-12-29",
+      "is_business_day": true,
+      "bd_index_following": 6779,
+      "bd_index_preceding": 6779
+    },
+    {
+      "date": "2025-12-30",
+      "is_business_day": true,
+      "bd_index_following": 6780,
+      "bd_index_preceding": 6780
+    },
+    {
+      "date": "2025-12-31",
+      "is_business_day": true,
+      "bd_index_following": 6781,
+      "bd_index_preceding": 6781
+    },
+    {
+      "date": "2026-01-01",
+      "is_business_day": false,
+      "bd_index_following": 6782,
+      "bd_index_preceding": 6781
+    },
+    {
+      "date": "2026-01-02",
+      "is_business_day": true,
+      "bd_index_following": 6782,
+      "bd_index_preceding": 6782
+    },
+    {
+      "date": "2026-01-03",
+      "is_business_day": false,
+      "bd_index_following": 6783,
+      "bd_index_preceding": 6782
+    },
+    {
+      "date": "2026-01-04",
+      "is_business_day": false,
+      "bd_index_following": 6783,
+      "bd_index_preceding": 6782
+    },
+    {
+      "date": "2026-01-05",
+      "is_business_day": true,
+      "bd_index_following": 6783,
+      "bd_index_preceding": 6783
+    },
+    {
+      "date": "2026-01-06",
+      "is_business_day": true,
+      "bd_index_following": 6784,
+      "bd_index_preceding": 6784
+    },
+    {
+      "date": "2026-01-07",
+      "is_business_day": true,
+      "bd_index_following": 6785,
+      "bd_index_preceding": 6785
+    },
+    {
+      "date": "2026-01-08",
+      "is_business_day": true,
+      "bd_index_following": 6786,
+      "bd_index_preceding": 6786
+    },
+    {
+      "date": "2026-07-01",
+      "is_business_day": true,
+      "bd_index_following": 6909,
+      "bd_index_preceding": 6909
+    },
+    {
+      "date": "2026-07-02",
+      "is_business_day": true,
+      "bd_index_following": 6910,
+      "bd_index_preceding": 6910
+    },
+    {
+      "date": "2026-07-03",
+      "is_business_day": false,
+      "bd_index_following": 6911,
+      "bd_index_preceding": 6910
+    },
+    {
+      "date": "2026-07-04",
+      "is_business_day": false,
+      "bd_index_following": 6911,
+      "bd_index_preceding": 6910
+    },
+    {
+      "date": "2026-07-05",
+      "is_business_day": false,
+      "bd_index_following": 6911,
+      "bd_index_preceding": 6910
+    },
+    {
+      "date": "2026-07-06",
+      "is_business_day": true,
+      "bd_index_following": 6911,
+      "bd_index_preceding": 6911
+    },
+    {
+      "date": "2000-01-03",
+      "is_business_day": true,
+      "bd_index_following": 0,
+      "bd_index_preceding": 0
+    },
+    {
+      "date": "2000-01-04",
+      "is_business_day": true,
+      "bd_index_following": 1,
+      "bd_index_preceding": 1
+    },
+    {
+      "date": "2026-09-26",
+      "is_business_day": false,
+      "bd_index_following": 6971,
+      "bd_index_preceding": 6970
+    },
+    {
+      "date": "2026-09-28",
+      "is_business_day": true,
+      "bd_index_following": 6971,
+      "bd_index_preceding": 6971
+    },
+    {
+      "date": "2100-12-31",
+      "is_business_day": true,
+      "bd_index_following": 26344,
+      "bd_index_preceding": 26344
+    }
+  ]
+}

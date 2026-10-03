@@ -1,0 +1,18 @@
+[project]
+name = "close-datagen"
+version = "0.1.0"
+description = "Seeded synthetic marketplace data with an answer key, for testing the close platform. Never deployed to production."
+requires-python = ">=3.12,<3.13"
+# numpy, pandas, pyarrow and pyspark come from Databricks Runtime 18 LTS (the workspace `local` group locally).
+dependencies = ["close-contracts", "close-engine"]
+
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/close_datagen"]
+
+[tool.uv.sources]
+close-contracts = { workspace = true }
+close-engine = { workspace = true }

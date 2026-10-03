@@ -1,0 +1,85 @@
+{
+  "_sample": "SAMPLE configuration for testing, not your company's accounting (docs/domain/sample-journal-rules.md)",
+  "body": {
+    "effective_from": "2026-06-01",
+    "spec": {
+      "amounts": [
+        "amount"
+      ],
+      "attributes": [
+        "provider"
+      ],
+      "description": "A payout to a seller completed through a payout provider",
+      "event_type": "SELLER_PAYOUT",
+      "identities": [],
+      "sources": [
+        {
+          "filter": {
+            "args": [
+              {
+                "col": "status"
+              },
+              {
+                "lit": "COMPLETED",
+                "type": "string"
+              }
+            ],
+            "fn": "eq"
+          },
+          "landing_table": "landing.payout_items",
+          "lookups": [],
+          "mapping": {
+            "accounting_date": {
+              "args": [
+                {
+                  "col": "created_at"
+                }
+              ],
+              "fn": "date_of"
+            },
+            "amount_amount": {
+              "args": [
+                {
+                  "args": [
+                    {
+                      "args": [
+                        {
+                          "col": "amount"
+                        },
+                        {
+                          "lit": "0",
+                          "type": "string"
+                        }
+                      ],
+                      "fn": "coalesce"
+                    }
+                  ],
+                  "fn": "parse_decimal"
+                },
+                {
+                  "col": "currency"
+                }
+              ],
+              "fn": "to_minor_units"
+            },
+            "attr_provider": {
+              "col": "provider"
+            },
+            "currency": {
+              "col": "currency"
+            },
+            "entity_id": {
+              "col": "entity_id"
+            },
+            "seller_id": {
+              "col": "seller_id"
+            }
+          },
+          "source_id": "payout_items"
+        }
+      ],
+      "type_id": "sample_seller_payout"
+    }
+  },
+  "resource": "event-types"
+}

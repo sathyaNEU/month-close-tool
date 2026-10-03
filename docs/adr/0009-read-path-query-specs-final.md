@@ -1,0 +1,21 @@
+# ADR-0009: the read path's final format (typed QuerySpecs over Spark Connect)
+
+Status: accepted with Stage 1b. Date: 2026-09-27. Spike S3. Amends ADR-0005 (from proposed to a settled format).
+
+## Context
+
+ADR-0005 turned the read path away from parameterised SQL templates, because open-source Delta drops SQL parameter markers (ADR-0002), and towards typed query specs compiled to DataFrame operations, with the caller's entity scope added by the engine. It left the exact format, the paging model and the production backend open. Stage 1b had to settle the format and prove it on the real stack: the app is a Databricks App that reaches Spark only through Spark Connect, users must never see another entity's rows, and pages must be consistent even while jobs keep writing.
+
+## Decision
+
+A `QuerySpec` (`close_contracts.query`) names one registered table and gives the columns, filters, order, grouping and page size. Filters are `Eq`, `In` (at most 200 values), half-open `Range` and `Prefix` (a `startswith`, so no pattern escaping exists); values are only `string` or `bigint`, and a filter never matches NULL. A row query's sort must end with the table's unique key and every sort column must be selected, so the order is total. A grouped query has `count` and `sum` aggregates, is ordered by its group columns, and returns at most 1,000 groups, where more is an error rather than a silent cut. The registry (`close_contracts.queryable`) is the read path's allowlist: a table or column that is not registered cannot be queried, and a test holds each definition to the schema the engine writes.
+
+The engine (`close_platform.query`) validates every spec, and an empty grant set returns nothing without a query. Otherwise it adds the caller's entity filter as the first condition. It reads the table's version first (`DESCRIBE HISTORY`, in the one allow-listed SQL module) and runs every page of that paging session at that version with `versionAsOf`, so a job that commits in the middle cannot shift a page. Paging is keyset-based: the cursor carries the last row's sort values, the version, the spec's fingerprint, the caller's id and an expiry, signed with HMAC-SHA256, so it cannot be forged, reused by another user, reused for another query, or kept forever. It deliberately does not carry the entity scope, which is recomputed on every page, so a revoked grant takes effect mid-paging.
+
+There are three executors of the same semantics. The DataFrame backend runs over Spark Connect in the app (at most four queries at a time, each tagged and interrupted on the server when it times out). The SQL renderer produces parameterised SQL for a Databricks SQL warehouse, with every caller value, including the entity scope and the page size, as a named marker. The reference evaluator is plain Python and is the oracle. The app's smoke endpoints use the format already: a succeeded run's result is read from `ops.run_manifests`, bound to the run's attempt and fencing token, and `/rows` and `/totals` page and group the run's rows.
+
+## Consequences
+
+The gate proves the format rather than assuming it. On 300 generated specs the DataFrame backend on Delta, the rendered SQL on plain Spark and the reference evaluator return identical rows. On 2,000 generated specs no row outside the caller's entities comes back. On 10,000 generated specs with random sentinel values no caller value appears in the SQL text, markers and bindings match one to one, every statement parses as Databricks SQL with sqlglot, and the entity predicate is always a top-level conjunct. Through the whole stack at 100k rows, the p95 of a page, a filtered page and a grouped total is well inside the 1.5 s budget (the report has the numbers, with a 1M-row and a four-client baseline). Spark Connect holds only the reader-only S3 key, so a write through it fails with 403.
+
+Two things are left for Stage 10. Production may read through a SQL warehouse instead of Spark Connect, and the renderer is ready for that, but the choice is made behind a differential test against a real workspace, as ADR-0005 said. The table version for time travel comes from `DESCRIBE HISTORY` because `DeltaTable` needs the JVM, and on Databricks the same statement is expected to work on Unity Catalog names, which the local catalog spike already shows for UC OSS (ADR-0010).

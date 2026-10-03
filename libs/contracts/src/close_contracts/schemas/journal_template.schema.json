@@ -1,0 +1,239 @@
+{
+  "$defs": {
+    "AccountRange": {
+      "additionalProperties": false,
+      "description": "Codes from ``first`` to ``last`` inclusive, compared as text (give codes of equal length).",
+      "properties": {
+        "first": {
+          "pattern": "^[A-Za-z0-9._-]{1,32}$",
+          "title": "First",
+          "type": "string"
+        },
+        "last": {
+          "pattern": "^[A-Za-z0-9._-]{1,32}$",
+          "title": "Last",
+          "type": "string"
+        }
+      },
+      "required": [
+        "first",
+        "last"
+      ],
+      "title": "AccountRange",
+      "type": "object"
+    },
+    "AllowedAccounts": {
+      "additionalProperties": false,
+      "description": "The accounts a template's journals may use. Nothing listed means every postable account.",
+      "properties": {
+        "account_types": {
+          "default": [],
+          "items": {
+            "enum": [
+              "asset",
+              "liability",
+              "equity",
+              "revenue",
+              "expense"
+            ],
+            "type": "string"
+          },
+          "title": "Account Types",
+          "type": "array"
+        },
+        "codes": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 1000,
+          "title": "Codes",
+          "type": "array"
+        },
+        "ranges": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/AccountRange"
+          },
+          "maxItems": 100,
+          "title": "Ranges",
+          "type": "array"
+        }
+      },
+      "title": "AllowedAccounts",
+      "type": "object"
+    },
+    "Column": {
+      "additionalProperties": false,
+      "description": "One header or line field of a template (BlackLine's template column).",
+      "properties": {
+        "allowed_values": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 500,
+          "title": "Allowed Values",
+          "type": "array"
+        },
+        "column_id": {
+          "pattern": "^[a-z][a-z0-9_]{0,40}$",
+          "title": "Column Id",
+          "type": "string"
+        },
+        "data_type": {
+          "default": "string",
+          "enum": [
+            "string",
+            "date",
+            "decimal",
+            "integer",
+            "boolean"
+          ],
+          "title": "Data Type",
+          "type": "string"
+        },
+        "default": {
+          "anyOf": [
+            {
+              "maxLength": 4000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Default"
+        },
+        "label": {
+          "maxLength": 100,
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "max_length": {
+          "default": 500,
+          "maximum": 4000,
+          "minimum": 1,
+          "title": "Max Length",
+          "type": "integer"
+        },
+        "non_negative": {
+          "default": false,
+          "title": "Non Negative",
+          "type": "boolean"
+        },
+        "read_only": {
+          "default": false,
+          "title": "Read Only",
+          "type": "boolean"
+        },
+        "required": {
+          "default": false,
+          "title": "Required",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "column_id",
+        "label"
+      ],
+      "title": "Column",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "allowed_accounts": {
+      "$ref": "#/$defs/AllowedAccounts",
+      "default": {
+        "account_types": [],
+        "codes": [],
+        "ranges": []
+      }
+    },
+    "attachment_required_from_minor": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Attachment Required From Minor"
+    },
+    "auto_reverse": {
+      "default": false,
+      "title": "Auto Reverse",
+      "type": "boolean"
+    },
+    "currencies": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 40,
+      "title": "Currencies",
+      "type": "array"
+    },
+    "description": {
+      "default": "",
+      "maxLength": 1000,
+      "title": "Description",
+      "type": "string"
+    },
+    "header_columns": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/Column"
+      },
+      "maxItems": 40,
+      "title": "Header Columns",
+      "type": "array"
+    },
+    "line_columns": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/Column"
+      },
+      "maxItems": 40,
+      "title": "Line Columns",
+      "type": "array"
+    },
+    "max_lines": {
+      "default": 500,
+      "maximum": 10000,
+      "minimum": 2,
+      "title": "Max Lines",
+      "type": "integer"
+    },
+    "min_description_length": {
+      "default": 1,
+      "maximum": 500,
+      "minimum": 1,
+      "title": "Min Description Length",
+      "type": "integer"
+    },
+    "name": {
+      "maxLength": 200,
+      "minLength": 1,
+      "title": "Name",
+      "type": "string"
+    },
+    "template_id": {
+      "pattern": "^[a-z][a-z0-9_]{2,63}$",
+      "title": "Template Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "template_id",
+    "name"
+  ],
+  "title": "JournalTemplate",
+  "type": "object"
+}

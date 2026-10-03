@@ -1,0 +1,9 @@
+# Databricks App definition (deployed from the `make app-dist` artifact; Stage 10 wires the bundle).
+# Lakebase injects PGHOST/PGPORT/PGDATABASE/PGUSER/PGSSLMODE/PGAPPNAME; the password is an OAuth token
+# minted for the app's service principal. DATABRICKS_APP_PORT is set by the platform.
+command: ["python", "-m", "close_app"]
+env:
+  - name: CLOSE_ENV
+    value: "dev"  # set per bundle target in Stage 10
+  - name: CLOSE_JOB_ID_SMOKE
+    valueFrom: smoke-job  # app resource: the smoke job, CAN_MANAGE_RUN for the app's service principal

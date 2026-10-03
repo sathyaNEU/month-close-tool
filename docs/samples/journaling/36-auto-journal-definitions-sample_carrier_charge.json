@@ -1,0 +1,51 @@
+{
+  "_sample": "SAMPLE configuration for testing, not your company's accounting (docs/domain/sample-journal-rules.md)",
+  "body": {
+    "effective_from": "2026-06-01",
+    "spec": {
+      "condition": null,
+      "definition_id": "sample_carrier_charge",
+      "event_types": [
+        "CARRIER_CHARGE"
+      ],
+      "lines": [
+        {
+          "account": {
+            "account": null,
+            "keys": [
+              {
+                "col": "attr_charge_type"
+              }
+            ],
+            "mapping": "sample_carrier_charge_account"
+          },
+          "amount": {
+            "col": "amount_amount"
+          },
+          "condition": null,
+          "description": null,
+          "dimensions": {},
+          "line_id": "charge",
+          "side": "DR"
+        },
+        {
+          "account": {
+            "account": "2420",
+            "keys": [],
+            "mapping": null
+          },
+          "amount": {
+            "col": "amount_amount"
+          },
+          "condition": null,
+          "description": null,
+          "dimensions": {},
+          "line_id": "payable",
+          "side": "CR"
+        }
+      ],
+      "name": "A carrier invoice line: transportation clears the accrual, corrections are extra expense"
+    }
+  },
+  "resource": "auto-journal-definitions"
+}

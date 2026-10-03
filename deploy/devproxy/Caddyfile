@@ -1,0 +1,67 @@
+# devproxy: the local stand-in for the Databricks Apps proxy, and the only published service.
+# It strips every identity and provenance header a client could forge (in any spelling Go
+# canonicalizes: X-Forwarded-User, x_forwarded_user, X-FORWARDED_user...), then sets the identity of
+# the logged-in dev user and a fresh X-Request-Id. Log in with /__dev/login/<alice|bob|carol|dave|erin|erp>
+# (erp is the stub ERP's machine identity, an integration_client in US01).
+# Development only: the cookie is the whole "authentication".
+{
+	admin off
+	auto_https off
+	persist_config off
+	servers {
+		protocols h1 h2c
+	}
+}
+
+:8088 {
+	# Deletion wildcards match canonical header names, case-sensitively: *orwarded* covers
+	# Forwarded, X-Forwarded-* and x_forwarded_* (so X-Forwarded-Access-Token too).
+	request_header -*orwarded*
+	request_header -*Real-Ip*
+	request_header -*real_ip*
+	request_header -*Request-Id*
+	request_header -*request_id*
+
+	map {cookie.close_dev_user} {dev_user_id} {dev_email} {
+		alice 1001 alice@example.com
+		bob 1002 bob@example.com
+		carol 1003 carol@example.com
+		dave 1004 dave@example.com
+		erin 1005 erin@example.com
+		erp 1006 erp@example.com
+		default "" ""
+	}
+
+	@login path_regexp login ^/__dev/login/(alice|bob|carol|dave|erin|erp)$
+	handle @login {
+		header Set-Cookie "close_dev_user={re.login.1}; Path=/; HttpOnly; SameSite=Strict"
+		respond "logged in as {re.login.1}" 200
+	}
+	handle /__dev/logout {
+		header Set-Cookie "close_dev_user=; Path=/; Max-Age=0; HttpOnly; SameSite=Strict"
+		respond "logged out" 200
+	}
+	handle /__dev/health {
+		respond "ok" 200
+	}
+	handle /__dev/* {
+		respond "unknown dev endpoint" 404
+	}
+
+	@signed_in not vars {dev_user_id} ""
+	handle @signed_in {
+		reverse_proxy {$APP_UPSTREAM:app:8000} {
+			header_up X-Forwarded-User {dev_user_id}
+			header_up X-Forwarded-Email {dev_email}
+			header_up X-Forwarded-Preferred-Username {cookie.close_dev_user}
+			header_up X-Real-Ip {remote_host}
+			header_up X-Request-Id {http.request.uuid}
+		}
+	}
+	handle {
+		reverse_proxy {$APP_UPSTREAM:app:8000} {
+			header_up X-Real-Ip {remote_host}
+			header_up X-Request-Id {http.request.uuid}
+		}
+	}
+}

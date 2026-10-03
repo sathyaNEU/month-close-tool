@@ -1,0 +1,119 @@
+[project]
+name = "close-platform-workspace"
+version = "0.1.0"
+description = "Marketplace month-close platform (transaction matching + journaling): uv workspace root"
+readme = "README.md"
+requires-python = "==3.12.*"
+
+[tool.uv]
+package = false
+default-groups = ["dev", "local"]
+# pyspark (full, with the JVM jars) and pyspark-client (Spark Connect only) both install the `pyspark`
+# package, so the deployable app's `connect` extra can never share an environment with `local`.
+conflicts = [
+  [{ group = "local" }, { package = "close-platform", extra = "connect" }],
+  [{ group = "local" }, { package = "close-app", extra = "connect" }],
+]
+
+[tool.uv.workspace]
+members = ["libs/contracts", "libs/platform", "engine", "datagen", "services/app", "services/jobs_emulator"]
+
+[tool.uv.sources]
+close-contracts = { workspace = true }
+close-engine = { workspace = true }
+close-datagen = { workspace = true }
+close-platform = { workspace = true }
+close-app = { workspace = true }
+close-jobs-emulator = { workspace = true }
+
+[dependency-groups]
+# Tooling used by `make ci` and the stage gates.
+dev = [
+  "pytest>=8.3",
+  "pytest-cov>=6.0",
+  "hypothesis>=6.120",
+  "ruff>=0.12",
+  "mypy>=1.17",
+  "pre-commit>=4.0",
+  "bandit>=1.8",
+  "pip-audit>=2.9",
+  "boto3>=1.40",
+  "httpx>=0.28",
+  "pytest-timeout>=2.3",
+  "types-pyyaml>=6.0.12",
+  "httpx2>=2.13",
+  "sqlglot==30.20.0",  # tests only: the SQL renderer's output must parse as Databricks SQL
+  "zizmor==1.30.1",  # GitHub Actions security lint
+]
+# Local mirror of the Databricks Runtime 18 LTS Python environment. These are NOT runtime
+# dependencies of the engine wheel: on Databricks the runtime already provides them.
+local = [
+  "pyspark[connect]==4.1.3",  # the connect extra adds the gRPC client stack the read path uses
+  "delta-spark==4.4.0",
+  "pandas==2.2.3",
+  "pyarrow==21.0.0",
+  "numpy==2.1.3",
+  "pydantic==2.10.6",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+# docs/ holds verbatim plans and ADRs (ruff also formats Python blocks inside Markdown).
+extend-exclude = ["tools/tests/fixtures", "research_notes", "reports", "docs"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF", "S", "PT", "N", "C4", "DTZ", "T20", "PL", "PERF", "ARG"]
+ignore = [
+  "PLR0913", "PLR2004", "PLR0911", "PLR0912",
+  "N812",     # `functions as F` is the PySpark convention
+  "PLC0415",  # lazy imports keep optional deps (delta, boto3) out of import time
+]
+
+[tool.ruff.lint.per-file-ignores]
+"**/tests/**" = ["S101", "S105", "S106", "S603", "S607", "S608", "PLR2004", "PLR0917", "ARG001", "ARG002", "T20"]  # fixtures arrive by keyword
+# Databricks injects `dbutils` and `spark`; imports follow the widget cells by design.
+"engine/notebooks/*" = ["F821", "INP001", "E402"]
+"tools/*.py" = ["T20", "S603", "S607"]
+# SELECT lists are module constants; every value is a bound parameter.
+"libs/platform/src/close_platform/runs.py" = ["S608"]
+# The SQL renderer: identifiers come from the table registry, every caller value is a bound marker.
+"libs/platform/src/close_platform/query/sql.py" = ["S608"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["close_contracts", "close_engine", "close_datagen", "close_platform", "close_app", "close_jobs_emulator"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_unreachable = true
+mypy_path = ["libs/contracts/src", "libs/platform/src", "engine/src", "datagen/src", "services/app/src", "services/jobs_emulator/src", "libs/contracts/tests", "libs/platform/tests", "services/app/tests", "tests/e2e"]
+explicit_package_bases = true
+exclude = ["tools/tests/fixtures/"]
+
+[[tool.mypy.overrides]]
+module = ["delta.*", "boto3.*", "botocore.*", "openpyxl.*"]  # openpyxl: the XLSX import (Stage 7b); no stubs installed
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+addopts = "-ra --strict-markers --strict-config --import-mode=importlib"
+pythonpath = [".", "libs/contracts/tests", "engine/tests", "datagen/tests", "libs/platform/tests", "services/app/tests", "tests/e2e"]
+markers = [
+  "spark: needs a local SparkSession (JVM on the host)",
+  "parity: needs the S3-compatible object store from compose.test.yaml",
+  "slow: long-running",
+  "pg: needs the Postgres from compose (make up-deps)",
+  "stack: needs the full compose stack (make up)",
+]
+testpaths = ["libs/contracts/tests", "libs/platform/tests", "tools/tests", "engine/tests", "datagen/tests", "services/app/tests", "services/jobs_emulator/tests", "tests/e2e"]
+xfail_strict = true
+
+[tool.coverage.run]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+
+[tool.bandit]
+exclude_dirs = ["tests", "tools/tests", ".venv"]

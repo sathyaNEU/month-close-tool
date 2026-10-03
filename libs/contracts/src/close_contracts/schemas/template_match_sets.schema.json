@@ -1,0 +1,1774 @@
+{
+  "match_sets": [
+    {
+      "entity_ids": [
+        "US01",
+        "UK01"
+      ],
+      "kind": "matching",
+      "match_set_id": "t1_orders_stripe",
+      "name": "Template 1: orders to Stripe captures",
+      "owners": {
+        "preparer": "close.preparer",
+        "reviewer": "close.reviewer"
+      },
+      "pass_rules": [
+        {
+          "allow_ambiguous_auto": false,
+          "ambiguity": "unique_only",
+          "conditions": [
+            {
+              "condition": "key_equals",
+              "left": {
+                "col": "a.reference"
+              },
+              "right": {
+                "col": "b.reference"
+              }
+            },
+            {
+              "condition": "key_equals",
+              "left": {
+                "col": "a.currency"
+              },
+              "right": {
+                "col": "b.text_2"
+              }
+            },
+            {
+              "absolute_minor": 0,
+              "bps": 0,
+              "cap_minor": 0,
+              "condition": "amount",
+              "left": {
+                "col": "a.amount_minor"
+              },
+              "mode": "exact",
+              "right": {
+                "col": "b.number_3"
+              }
+            }
+          ],
+          "group_by": [
+            {
+              "col": "b.reference"
+            }
+          ],
+          "kind": "1:M",
+          "limits": {
+            "max_block_pairs": 1000000,
+            "max_candidates_per_item": 50,
+            "subset_max_candidates": 24,
+            "work_budget": 1048576
+          },
+          "name": "Order equals its captures",
+          "outcome": "auto",
+          "rule_id": "exact_captures",
+          "sides": [
+            "a",
+            "b"
+          ]
+        },
+        {
+          "allow_ambiguous_auto": false,
+          "ambiguity": "unique_only",
+          "conditions": [
+            {
+              "condition": "key_equals",
+              "left": {
+                "col": "a.reference"
+              },
+              "right": {
+                "col": "b.reference"
+              }
+            },
+            {
+              "condition": "key_equals",
+              "left": {
+                "col": "a.currency"
+              },
+              "right": {
+                "col": "b.text_2"
+              }
+            },
+            {
+              "absolute_minor": 100,
+              "bps": 0,
+              "cap_minor": 0,
+              "condition": "amount",
+              "left": {
+                "col": "a.amount_minor"
+              },
+              "mode": "absolute",
+              "right": {
+                "col": "b.number_3"
+              }
+            }
+          ],
+          "group_by": [
+            {
+              "col": "b.reference"
+            }
+          ],
+          "kind": "1:M",
+          "limits": {
+            "max_block_pairs": 1000000,
+            "max_candidates_per_item": 50,
+            "subset_max_candidates": 24,
+            "work_budget": 1048576
+          },
+          "name": "Order within one currency unit of its captures",
+          "outcome": "suggested",
+          "rule_id": "rounding",
+          "sides": [
+            "a",
+            "b"
+          ]
+        }
+      ],
+      "schedule": {
+        "at_utc": null,
+        "mode": "manual"
+      },
+      "sources": [
+        {
+          "role": "a",
+          "scope": {
+            "args": [
+              {
+                "col": "a.text_1"
+              },
+              {
+                "lit": "stripe",
+                "type": "string"
+              }
+            ],
+            "fn": "eq"
+          },
+          "source_id": "orders"
+        },
+        {
+          "role": "b",
+          "scope": {
+            "args": [
+              {
+                "col": "b.text_1"
+              },
+              {
+                "lit": "charge",
+                "type": "string"
+              }
+            ],
+            "fn": "eq"
+          },
+          "source_id": "stripe_balance_transactions"
+        }
+      ],
+      "timing_rules": []
+    },
+    {
+      "entity_ids": [
+        "EU01",
+        "UK01"
+      ],
+      "kind": "matching",
+      "match_set_id": "t1_orders_adyen",
+      "name": "Template 1: orders to Adyen captures",
+      "owners": {
+        "preparer": "close.preparer",
+        "reviewer": "close.reviewer"
+      },
+      "pass_rules": [
+        {
+          "allow_ambiguous_auto": false,
+          "ambiguity": "unique_only",
+          "conditions": [
+            {
+              "condition": "key_equals",
+              "left": {
+                "col": "a.reference"
+              },
+              "right": {
+                "col": "b.reference"
+              }
+            },
+            {
+              "condition": "key_equals",
+              "left": {
+                "col": "a.currency"
+              },
+              "right": {
+                "col": "b.text_2"
+              }
+            },
+            {
+              "absolute_minor": 0,
+              "bps": 0,
+              "cap_minor": 0,
+              "condition": "amount",
+              "left": {
+                "col": "a.amount_minor"
+              },
+              "mode": "exact",
+              "right": {
+                "col": "b.number_1"
+              }
+            }
+          ],
+          "group_by": [
+            {
+              "col": "b.reference"
+            }
+          ],
+          "kind": "1:M",
+          "limits": {
+            "max_block_pairs": 1000000,
+            "max_candidates_per_item": 50,
+            "subset_max_candidates": 24,
+            "work_budget": 1048576
+          },
+          "name": "Order equals its captures",
+          "outcome": "auto",
+          "rule_id": "exact_captures",
+          "sides": [
+            "a",
+            "b"
+          ]
+        },
+        {
+          "allow_ambiguous_auto": false,
+          "ambiguity": "unique_only",
+          "conditions": [
+            {
+              "condition": "key_equals",
+              "left": {
+                "col": "a.reference"
+              },
+              "right": {
+                "col": "b.reference"
+              }
+            },
+            {
+              "condition": "key_equals",
+              "left": {
+                "col": "a.currency"
+              },
+              "right": {
+                "col": "b.text_2"
+              }
+            },
+            {
+              "absolute_minor": 100,
+              "bps": 0,
+              "cap_minor": 0,
+              "condition": "amount",
+              "left": {
+                "col": "a.amount_minor"
+              },
+              "mode": "absolute",
+              "right": {
+                "col": "b.number_1"
+              }
+            }
+          ],
+          "group_by": [
+            {
+              "col": "b.reference"
+            }
+          ],
+          "kind": "1:M",
+          "limits": {
+            "max_block_pairs": 1000000,
+            "max_candidates_per_item": 50,
+            "subset_max_candidates": 24,
+            "work_budget": 1048576
+          },
+          "name": "Order within one currency unit of its captures",
+          "outcome": "suggested",
+          "rule_id": "rounding",
+          "sides": [
+            "a",
+            "b"
+          ]
+        }
+      ],
+      "schedule": {
+        "at_utc": null,
+        "mode": "manual"
+      },
+      "sources": [
+        {
+          "role": "a",
+          "scope": {
+            "args": [
+              {
+                "col": "a.text_1"
+              },
+              {
+                "lit": "adyen",
+                "type": "string"
+              }
+            ],
+            "fn": "eq"
+          },
+          "source_id": "orders"
+        },
+        {
+          "role": "b",
+          "scope": {
+            "args": [
+              {
+                "col": "b.text_1"
+              },
+              {
+                "lit": "Settled",
+                "type": "string"
+              }
+            ],
+            "fn": "eq"
+          },
+          "source_id": "adyen_settlement_details"
+        }
+      ],
+      "timing_rules": []
+    },
+    {
+      "entity_ids": [
+        "US01",
+        "UK01"
+      ],
+      "kind": "matching",
+      "match_set_id": "t2_stripe_payouts",
+      "name": "Template 2: Stripe payouts to their balance transactions",
+      "owners": {
+        "preparer": "close.preparer",
+        "reviewer": "close.reviewer"
+      },
+      "pass_rules": [
+        {
+          "allow_ambiguous_auto": false,
+          "ambiguity": "unique_only",
+          "conditions": [
+            {
+              "condition": "key_equals",
+              "left": {
+                "col": "a.reference"
+              },
+              "right": {
+                "col": "b.reference_3"
+              }
+            },
+            {
+              "absolute_minor": 0,
+              "bps": 0,
+              "cap_minor": 0,
+              "condition": "amount",
+              "left": {
+                "col": "a.amount_minor"
+              },
+              "mode": "exact",
+              "right": {
+                "col": "b.number_2"
+              }
+            },
+            {
+              "condition": "currency",
+              "mode": "equal",
+              "tolerance_bps": 0
+            }
+          ],
+          "group_by": [
+            {
+              "col": "b.reference_3"
+            }
+          ],
+          "kind": "1:M",
+          "limits": {
+            "max_block_pairs": 1000000,
+            "max_candidates_per_item": 50,
+            "subset_max_candidates": 24,
+            "work_budget": 1048576
+          },
+          "name": "Payout equals the net of its transactions",
+          "outcome": "auto",
+          "rule_id": "payout_total",
+          "sides": [
+            "a",
+            "b"
+          ]
+        }
+      ],
+      "schedule": {
+        "at_utc": null,
+        "mode": "manual"
+      },
+      "sources": [
+        {
+          "role": "a",
+          "scope": null,
+          "source_id": "stripe_payouts"
+        },
+        {
+          "role": "b",
+          "scope": {
+            "args": [
+              {
+                "col": "b.text_1"
+              },
+              {
+                "lit": "payout",
+                "type": "string"
+              }
+            ],
+            "fn": "ne"
+          },
+          "source_id": "stripe_balance_transactions"
+        }
+      ],
+      "timing_rules": []
+    },
+    {
+      "entity_ids": [
+        "EU01",
+        "UK01"
+      ],
+      "kind": "matching",
+      "match_set_id": "t2_adyen_batches",
+      "name": "Template 2: Adyen payouts to their settlement batches",
+      "owners": {
+        "preparer": "close.preparer",
+        "reviewer": "close.reviewer"
+      },
+      "pass_rules": [
+        {
+          "allow_ambiguous_auto": false,
+          "ambiguity": "unique_only",
+          "conditions": [
+            {
+              "condition": "key_equals",
+              "left": {
+                "col": "a.entity_id"
+              },
+              "right": {
+                "col": "b.entity_id"
+              }
+            },
+            {
+              "condition": "key_equals",
+              "left": {
+                "col": "a.number_2"
+              },
+              "right": {
+                "col": "b.number_2"
+              }
+            },
+            {
+              "absolute_minor": 0,
+              "bps": 0,
+              "cap_minor": 0,
+              "condition": "amount",
+              "left": {
+                "args": [
+                  {
+                    "col": "a.amount_minor"
+                  }
+                ],
+                "fn": "neg"
+              },
+              "mode": "exact",
+              "right": {
+                "col": "b.amount_minor"
+              }
+            },
+            {
+              "condition": "currency",
+              "mode": "equal",
+              "tolerance_bps": 0
+            }
+          ],
+          "group_by": [
+            {
+              "col": "b.entity_id"
+            },
+            {
+              "col": "b.number_2"
+            }
+          ],
+          "kind": "1:M",
+          "limits": {
+            "max_block_pairs": 1000000,
+            "max_candidates_per_item": 50,
+            "subset_max_candidates": 24,
+            "work_budget": 1048576
+          },
+          "name": "Payout equals the net of its batch",
+          "outcome": "auto",
+          "rule_id": "batch_total",
+          "sides": [
+            "a",
+            "b"
+          ]
+        }
+      ],
+      "schedule": {
+        "at_utc": null,
+        "mode": "manual"
+      },
+      "sources": [
+        {
+          "role": "a",
+          "scope": {
+            "args": [
+              {
+                "col": "a.text_1"
+              },
+              {
+                "lit": "MerchantPayout",
+                "type": "string"
+              }
+            ],
+            "fn": "eq"
+          },
+          "source_id": "adyen_settlement_details"
+        },
+        {
+          "role": "b",
+          "scope": {
+            "args": [
+              {
+                "col": "b.text_1"
+              },
+              {
+                "lit": "MerchantPayout",
+                "type": "string"
+              }
+            ],
+            "fn": "ne"
+          },
+          "source_id": "adyen_settlement_details"
+        }
+      ],
+      "timing_rules": []
+    },
+    {
+      "entity_ids": [
+        "US01"
+      ],
+      "kind": "matching",
+      "match_set_id": "t3_stripe_bank_bai2_us01",
+      "name": "Template 3: Stripe payouts to bai2 bank credits (US01)",
+      "owners": {
+        "preparer": "close.preparer",
+        "reviewer": "close.reviewer"
+      },
+      "pass_rules": [
+        {
+          "allow_ambiguous_auto": false,
+          "ambiguity": "unique_only",
+          "conditions": [
+            {
+              "condition": "key_equals",
+              "left": {
+                "col": "a.reference_2"
+              },
+              "right": {
+                "args": [
+                  {
+                    "col": "b.reference_2"
+                  },
+                  {
+                    "col": "b.reference"
+                  }
+                ],
+                "fn": "coalesce"
+              }
+            },
+            {
+              "absolute_minor": 0,
+              "bps": 0,
+              "cap_minor": 0,
+              "condition": "amount",
+              "left": {
+                "col": "a.amount_minor"
+              },
+              "mode": "exact",
+              "right": {
+                "col": "b.amount_minor"
+              }
+            },
+            {
+              "condition": "currency",
+              "mode": "equal",
+              "tolerance_bps": 0
+            },
+            {
+              "after": 2,
+              "before": 1,
+              "calendar": "US_FED",
+              "condition": "date_window",
+              "left": {
+                "col": "a.value_date"
+              },
+              "right": {
+                "col": "b.value_date"
+              },
+              "unit": "business_days"
+            }
+          ],
+          "group_by": [],
+          "kind": "1:1",
+          "limits": {
+            "max_block_pairs": 1000000,
+            "max_candidates_per_item": 50,
+            "subset_max_candidates": 24,
+            "work_budget": 1048576
+          },
+          "name": "Payout credited on time",
+          "outcome": "auto",
+          "rule_id": "on_time",
+          "sides": [
+            "a",
+            "b"
+          ]
+        },
+        {
+          "allow_ambiguous_auto": false,
+          "ambiguity": "unique_only",
+          "conditions": [
+            {
+              "condition": "key_equals",
+              "left": {
+                "col": "a.reference_2"
+              },
+              "right": {
+                "args": [
+                  {
+                    "col": "b.reference_2"
+                  },
+                  {
+                    "col": "b.reference"
+                  }
+                ],
+                "fn": "coalesce"
+              }
+            },
+            {
+              "absolute_minor": 0,
+              "bps": 0,
+              "cap_minor": 0,
+              "condition": "amount",
+              "left": {
+                "col": "a.amount_minor"
+              },
+              "mode": "exact",
+              "right": {
+                "col": "b.amount_minor"
+              }
+            },
+            {
+              "condition": "currency",
+              "mode": "equal",
+              "tolerance_bps": 0
+            }
+          ],
+          "group_by": [],
+          "kind": "1:1",
+          "limits": {
+            "max_block_pairs": 1000000,
+            "max_candidates_per_item": 50,
+            "subset_max_candidates": 24,
+            "work_budget": 1048576
+          },
+          "name": "Payout credited late",
+          "outcome": "suggested",
+          "rule_id": "late",
+          "sides": [
+            "a",
+            "b"
+          ]
+        }
+      ],
+      "schedule": {
+        "at_utc": null,
+        "mode": "manual"
+      },
+      "sources": [
+        {
+          "role": "a",
+          "scope": null,
+          "source_id": "stripe_payouts"
+        },
+        {
+          "role": "b",
+          "scope": {
+            "args": [
+              {
+                "args": [
+                  {
+                    "col": "b.text_2"
+                  },
+                  {
+                    "lit": "C",
+                    "type": "string"
+                  }
+                ],
+                "fn": "eq"
+              },
+              {
+                "args": [
+                  {
+                    "args": [
+                      {
+                        "col": "b.description"
+                      }
+                    ],
+                    "fn": "upper"
+                  },
+                  {
+                    "lit": "STRIPE",
+                    "type": "string"
+                  }
+                ],
+                "fn": "contains"
+              }
+            ],
+            "fn": "and"
+          },
+          "source_id": "bank_bai2"
+        }
+      ],
+      "timing_rules": []
+    },
+    {
+      "entity_ids": [
+        "UK01"
+      ],
+      "kind": "matching",
+      "match_set_id": "t3_stripe_bank_mt940_uk01",
+      "name": "Template 3: Stripe payouts to mt940 bank credits (UK01)",
+      "owners": {
+        "preparer": "close.preparer",
+        "reviewer": "close.reviewer"
+      },
+      "pass_rules": [
+        {
+          "allow_ambiguous_auto": false,
+          "ambiguity": "unique_only",
+          "conditions": [
+            {
+              "condition": "key_equals",
+              "left": {
+                "col": "a.reference_2"
+              },
+              "right": {
+                "args": [
+                  {
+                    "col": "b.reference_2"
+                  },
+                  {
+                    "col": "b.reference"
+                  }
+                ],
+                "fn": "coalesce"
+              }
+            },
+            {
+              "absolute_minor": 0,
+              "bps": 0,
+              "cap_minor": 0,
+              "condition": "amount",
+              "left": {
+                "col": "a.amount_minor"
+              },
+              "mode": "exact",
+              "right": {
+                "col": "b.amount_minor"
+              }
+            },
+            {
+              "condition": "currency",
+              "mode": "equal",
+              "tolerance_bps": 0
+            },
+            {
+              "after": 2,
+              "before": 1,
+              "calendar": "UK_BANK",
+              "condition": "date_window",
+              "left": {
+                "col": "a.value_date"
+              },
+              "right": {
+                "col": "b.value_date"
+              },
+              "unit": "business_days"
+            }
+          ],
+          "group_by": [],
+          "kind": "1:1",
+          "limits": {
+            "max_block_pairs": 1000000,
+            "max_candidates_per_item": 50,
+            "subset_max_candidates": 24,
+            "work_budget": 1048576
+          },
+          "name": "Payout credited on time",
+          "outcome": "auto",
+          "rule_id": "on_time",
+          "sides": [
+            "a",
+            "b"
+          ]
+        },
+        {
+          "allow_ambiguous_auto": false,
+          "ambiguity": "unique_only",
+          "conditions": [
+            {
+              "condition": "key_equals",
+              "left": {
+                "col": "a.reference_2"
+              },
+              "right": {
+                "args": [
+                  {
+                    "col": "b.reference_2"
+                  },
+                  {
+                    "col": "b.reference"
+                  }
+                ],
+                "fn": "coalesce"
+              }
+            },
+            {
+              "absolute_minor": 0,
+              "bps": 0,
+              "cap_minor": 0,
+              "condition": "amount",
+              "left": {
+                "col": "a.amount_minor"
+              },
+              "mode": "exact",
+              "right": {
+                "col": "b.amount_minor"
+              }
+            },
+            {
+              "condition": "currency",
+              "mode": "equal",
+              "tolerance_bps": 0
+            }
+          ],
+          "group_by": [],
+          "kind": "1:1",
+          "limits": {
+            "max_block_pairs": 1000000,
+            "max_candidates_per_item": 50,
+            "subset_max_candidates": 24,
+            "work_budget": 1048576
+          },
+          "name": "Payout credited late",
+          "outcome": "suggested",
+          "rule_id": "late",
+          "sides": [
+            "a",
+            "b"
+          ]
+        }
+      ],
+      "schedule": {
+        "at_utc": null,
+        "mode": "manual"
+      },
+      "sources": [
+        {
+          "role": "a",
+          "scope": null,
+          "source_id": "stripe_payouts"
+        },
+        {
+          "role": "b",
+          "scope": {
+            "args": [
+              {
+                "args": [
+                  {
+                    "col": "b.text_2"
+                  },
+                  {
+                    "lit": "C",
+                    "type": "string"
+                  }
+                ],
+                "fn": "eq"
+              },
+              {
+                "args": [
+                  {
+                    "args": [
+                      {
+                        "col": "b.description"
+                      }
+                    ],
+                    "fn": "upper"
+                  },
+                  {
+                    "lit": "STRIPE",
+                    "type": "string"
+                  }
+                ],
+                "fn": "contains"
+              }
+            ],
+            "fn": "and"
+          },
+          "source_id": "bank_mt940"
+        }
+      ],
+      "timing_rules": []
+    },
+    {
+      "entity_ids": [
+        "EU01"
+      ],
+      "kind": "matching",
+      "match_set_id": "t3_adyen_bank_camt053_eu01",
+      "name": "Template 3: Adyen payouts to camt053 bank credits (EU01)",
+      "owners": {
+        "preparer": "close.preparer",
+        "reviewer": "close.reviewer"
+      },
+      "pass_rules": [
+        {
+          "allow_ambiguous_auto": false,
+          "ambiguity": "unique_only",
+          "conditions": [
+            {
+              "condition": "key_equals",
+              "left": {
+                "col": "a.reference_3"
+              },
+              "right": {
+                "args": [
+                  {
+                    "col": "b.reference_2"
+                  },
+                  {
+                    "col": "b.reference"
+                  }
+                ],
+                "fn": "coalesce"
+              }
+            },
+            {
+              "absolute_minor": 0,
+              "bps": 0,
+              "cap_minor": 0,
+              "condition": "amount",
+              "left": {
+                "args": [
+                  {
+                    "col": "a.amount_minor"
+                  }
+                ],
+                "fn": "neg"
+              },
+              "mode": "exact",
+              "right": {
+                "col": "b.amount_minor"
+              }
+            },
+            {
+              "condition": "currency",
+              "mode": "equal",
+              "tolerance_bps": 0
+            },
+            {
+              "after": 3,
+              "before": 0,
+              "calendar": "TARGET2",
+              "condition": "date_window",
+              "left": {
+                "col": "a.transaction_date"
+              },
+              "right": {
+                "col": "b.value_date"
+              },
+              "unit": "business_days"
+            }
+          ],
+          "group_by": [],
+          "kind": "1:1",
+          "limits": {
+            "max_block_pairs": 1000000,
+            "max_candidates_per_item": 50,
+            "subset_max_candidates": 24,
+            "work_budget": 1048576
+          },
+          "name": "Payout credited on time",
+          "outcome": "auto",
+          "rule_id": "on_time",
+          "sides": [
+            "a",
+            "b"
+          ]
+        },
+        {
+          "allow_ambiguous_auto": false,
+          "ambiguity": "unique_only",
+          "conditions": [
+            {
+              "condition": "key_equals",
+              "left": {
+                "col": "a.reference_3"
+              },
+              "right": {
+                "args": [
+                  {
+                    "col": "b.reference_2"
+                  },
+                  {
+                    "col": "b.reference"
+                  }
+                ],
+                "fn": "coalesce"
+              }
+            },
+            {
+              "absolute_minor": 0,
+              "bps": 0,
+              "cap_minor": 0,
+              "condition": "amount",
+              "left": {
+                "args": [
+                  {
+                    "col": "a.amount_minor"
+                  }
+                ],
+                "fn": "neg"
+              },
+              "mode": "exact",
+              "right": {
+                "col": "b.amount_minor"
+              }
+            },
+            {
+              "condition": "currency",
+              "mode": "equal",
+              "tolerance_bps": 0
+            }
+          ],
+          "group_by": [],
+          "kind": "1:1",
+          "limits": {
+            "max_block_pairs": 1000000,
+            "max_candidates_per_item": 50,
+            "subset_max_candidates": 24,
+            "work_budget": 1048576
+          },
+          "name": "Payout credited late",
+          "outcome": "suggested",
+          "rule_id": "late",
+          "sides": [
+            "a",
+            "b"
+          ]
+        }
+      ],
+      "schedule": {
+        "at_utc": null,
+        "mode": "manual"
+      },
+      "sources": [
+        {
+          "role": "a",
+          "scope": {
+            "args": [
+              {
+                "col": "a.text_1"
+              },
+              {
+                "lit": "MerchantPayout",
+                "type": "string"
+              }
+            ],
+            "fn": "eq"
+          },
+          "source_id": "adyen_settlement_details"
+        },
+        {
+          "role": "b",
+          "scope": {
+            "args": [
+              {
+                "args": [
+                  {
+                    "col": "b.text_2"
+                  },
+                  {
+                    "lit": "C",
+                    "type": "string"
+                  }
+                ],
+                "fn": "eq"
+              },
+              {
+                "args": [
+                  {
+                    "args": [
+                      {
+                        "col": "b.description"
+                      }
+                    ],
+                    "fn": "upper"
+                  },
+                  {
+                    "lit": "ADYEN",
+                    "type": "string"
+                  }
+                ],
+                "fn": "contains"
+              }
+            ],
+            "fn": "and"
+          },
+          "source_id": "bank_camt053"
+        }
+      ],
+      "timing_rules": []
+    },
+    {
+      "entity_ids": [
+        "UK01"
+      ],
+      "kind": "matching",
+      "match_set_id": "t3_adyen_bank_mt940_uk01",
+      "name": "Template 3: Adyen payouts to mt940 bank credits (UK01)",
+      "owners": {
+        "preparer": "close.preparer",
+        "reviewer": "close.reviewer"
+      },
+      "pass_rules": [
+        {
+          "allow_ambiguous_auto": false,
+          "ambiguity": "unique_only",
+          "conditions": [
+            {
+              "condition": "key_equals",
+              "left": {
+                "col": "a.reference_3"
+              },
+              "right": {
+                "args": [
+                  {
+                    "col": "b.reference_2"
+                  },
+                  {
+                    "col": "b.reference"
+                  }
+                ],
+                "fn": "coalesce"
+              }
+            },
+            {
+              "absolute_minor": 0,
+              "bps": 0,
+              "cap_minor": 0,
+              "condition": "amount",
+              "left": {
+                "args": [
+                  {
+                    "col": "a.amount_minor"
+                  }
+                ],
+                "fn": "neg"
+              },
+              "mode": "exact",
+              "right": {
+                "col": "b.amount_minor"
+              }
+            },
+            {
+              "condition": "currency",
+              "mode": "equal",
+              "tolerance_bps": 0
+            },
+            {
+              "after": 3,
+              "before": 0,
+              "calendar": "UK_BANK",
+              "condition": "date_window",
+              "left": {
+                "col": "a.transaction_date"
+              },
+              "right": {
+                "col": "b.value_date"
+              },
+              "unit": "business_days"
+            }
+          ],
+          "group_by": [],
+          "kind": "1:1",
+          "limits": {
+            "max_block_pairs": 1000000,
+            "max_candidates_per_item": 50,
+            "subset_max_candidates": 24,
+            "work_budget": 1048576
+          },
+          "name": "Payout credited on time",
+          "outcome": "auto",
+          "rule_id": "on_time",
+          "sides": [
+            "a",
+            "b"
+          ]
+        },
+        {
+          "allow_ambiguous_auto": false,
+          "ambiguity": "unique_only",
+          "conditions": [
+            {
+              "condition": "key_equals",
+              "left": {
+                "col": "a.reference_3"
+              },
+              "right": {
+                "args": [
+                  {
+                    "col": "b.reference_2"
+                  },
+                  {
+                    "col": "b.reference"
+                  }
+                ],
+                "fn": "coalesce"
+              }
+            },
+            {
+              "absolute_minor": 0,
+              "bps": 0,
+              "cap_minor": 0,
+              "condition": "amount",
+              "left": {
+                "args": [
+                  {
+                    "col": "a.amount_minor"
+                  }
+                ],
+                "fn": "neg"
+              },
+              "mode": "exact",
+              "right": {
+                "col": "b.amount_minor"
+              }
+            },
+            {
+              "condition": "currency",
+              "mode": "equal",
+              "tolerance_bps": 0
+            }
+          ],
+          "group_by": [],
+          "kind": "1:1",
+          "limits": {
+            "max_block_pairs": 1000000,
+            "max_candidates_per_item": 50,
+            "subset_max_candidates": 24,
+            "work_budget": 1048576
+          },
+          "name": "Payout credited late",
+          "outcome": "suggested",
+          "rule_id": "late",
+          "sides": [
+            "a",
+            "b"
+          ]
+        }
+      ],
+      "schedule": {
+        "at_utc": null,
+        "mode": "manual"
+      },
+      "sources": [
+        {
+          "role": "a",
+          "scope": {
+            "args": [
+              {
+                "col": "a.text_1"
+              },
+              {
+                "lit": "MerchantPayout",
+                "type": "string"
+              }
+            ],
+            "fn": "eq"
+          },
+          "source_id": "adyen_settlement_details"
+        },
+        {
+          "role": "b",
+          "scope": {
+            "args": [
+              {
+                "args": [
+                  {
+                    "col": "b.text_2"
+                  },
+                  {
+                    "lit": "C",
+                    "type": "string"
+                  }
+                ],
+                "fn": "eq"
+              },
+              {
+                "args": [
+                  {
+                    "args": [
+                      {
+                        "col": "b.description"
+                      }
+                    ],
+                    "fn": "upper"
+                  },
+                  {
+                    "lit": "ADYEN",
+                    "type": "string"
+                  }
+                ],
+                "fn": "contains"
+              }
+            ],
+            "fn": "and"
+          },
+          "source_id": "bank_mt940"
+        }
+      ],
+      "timing_rules": []
+    },
+    {
+      "entity_ids": [
+        "US01",
+        "EU01",
+        "UK01"
+      ],
+      "kind": "matching",
+      "match_set_id": "t6_seller_payouts",
+      "name": "Template 6: seller payouts to seller payables",
+      "owners": {
+        "preparer": "close.preparer",
+        "reviewer": "close.reviewer"
+      },
+      "pass_rules": [
+        {
+          "allow_ambiguous_auto": false,
+          "ambiguity": "unique_only",
+          "conditions": [
+            {
+              "condition": "key_equals",
+              "left": {
+                "col": "a.reference"
+              },
+              "right": {
+                "col": "b.reference"
+              }
+            },
+            {
+              "condition": "expression",
+              "expr": {
+                "args": [
+                  {
+                    "col": "a.text_1"
+                  },
+                  {
+                    "lit": "COMPLETED",
+                    "type": "string"
+                  }
+                ],
+                "fn": "eq"
+              }
+            },
+            {
+              "absolute_minor": 0,
+              "bps": 0,
+              "cap_minor": 0,
+              "condition": "amount",
+              "left": {
+                "col": "a.amount_minor"
+              },
+              "mode": "exact",
+              "right": {
+                "col": "b.amount_minor"
+              }
+            },
+            {
+              "condition": "currency",
+              "mode": "equal",
+              "tolerance_bps": 0
+            }
+          ],
+          "group_by": [
+            {
+              "col": "b.reference"
+            }
+          ],
+          "kind": "1:M",
+          "limits": {
+            "max_block_pairs": 1000000,
+            "max_candidates_per_item": 50,
+            "subset_max_candidates": 24,
+            "work_budget": 1048576
+          },
+          "name": "Completed payout equals its batch of payables",
+          "outcome": "auto",
+          "rule_id": "payout_batch",
+          "sides": [
+            "a",
+            "b"
+          ]
+        }
+      ],
+      "schedule": {
+        "at_utc": null,
+        "mode": "manual"
+      },
+      "sources": [
+        {
+          "role": "a",
+          "scope": null,
+          "source_id": "payout_items"
+        },
+        {
+          "role": "b",
+          "scope": null,
+          "source_id": "seller_payables"
+        }
+      ],
+      "timing_rules": []
+    },
+    {
+      "entity_ids": [
+        "US01",
+        "EU01",
+        "UK01"
+      ],
+      "kind": "matching",
+      "match_set_id": "t9_carrier_invoices",
+      "name": "Template 9: shipping labels to carrier invoice lines",
+      "owners": {
+        "preparer": "close.preparer",
+        "reviewer": "close.reviewer"
+      },
+      "pass_rules": [
+        {
+          "allow_ambiguous_auto": false,
+          "ambiguity": "unique_only",
+          "conditions": [
+            {
+              "condition": "key_equals",
+              "left": {
+                "col": "a.reference"
+              },
+              "right": {
+                "col": "b.reference"
+              }
+            },
+            {
+              "absolute_minor": 0,
+              "bps": 0,
+              "cap_minor": 0,
+              "condition": "amount",
+              "left": {
+                "col": "a.amount_minor"
+              },
+              "mode": "exact",
+              "right": {
+                "col": "b.amount_minor"
+              }
+            },
+            {
+              "condition": "currency",
+              "mode": "equal",
+              "tolerance_bps": 0
+            }
+          ],
+          "group_by": [
+            {
+              "col": "b.reference"
+            }
+          ],
+          "kind": "1:M",
+          "limits": {
+            "max_block_pairs": 1000000,
+            "max_candidates_per_item": 50,
+            "subset_max_candidates": 24,
+            "work_budget": 1048576
+          },
+          "name": "Label equals its billed lines",
+          "outcome": "auto",
+          "rule_id": "label_charges",
+          "sides": [
+            "a",
+            "b"
+          ]
+        }
+      ],
+      "schedule": {
+        "at_utc": null,
+        "mode": "manual"
+      },
+      "sources": [
+        {
+          "role": "a",
+          "scope": null,
+          "source_id": "shipping_labels"
+        },
+        {
+          "role": "b",
+          "scope": null,
+          "source_id": "carrier_invoice_lines"
+        }
+      ],
+      "timing_rules": []
+    },
+    {
+      "entity_ids": [
+        "US01",
+        "EU01",
+        "UK01"
+      ],
+      "kind": "matching",
+      "match_set_id": "t10_order_tax",
+      "name": "Template 10: order tax to tax documents",
+      "owners": {
+        "preparer": "close.preparer",
+        "reviewer": "close.reviewer"
+      },
+      "pass_rules": [
+        {
+          "allow_ambiguous_auto": false,
+          "ambiguity": "unique_only",
+          "conditions": [
+            {
+              "condition": "key_equals",
+              "left": {
+                "col": "a.reference"
+              },
+              "right": {
+                "col": "b.reference"
+              }
+            },
+            {
+              "absolute_minor": 0,
+              "bps": 0,
+              "cap_minor": 0,
+              "condition": "amount",
+              "left": {
+                "col": "a.number_1"
+              },
+              "mode": "exact",
+              "right": {
+                "col": "b.amount_minor"
+              }
+            },
+            {
+              "condition": "currency",
+              "mode": "equal",
+              "tolerance_bps": 0
+            }
+          ],
+          "group_by": [],
+          "kind": "1:1",
+          "limits": {
+            "max_block_pairs": 1000000,
+            "max_candidates_per_item": 50,
+            "subset_max_candidates": 24,
+            "work_budget": 1048576
+          },
+          "name": "Order tax equals its document",
+          "outcome": "auto",
+          "rule_id": "order_document",
+          "sides": [
+            "a",
+            "b"
+          ]
+        }
+      ],
+      "schedule": {
+        "at_utc": null,
+        "mode": "manual"
+      },
+      "sources": [
+        {
+          "role": "a",
+          "scope": {
+            "args": [
+              {
+                "col": "a.text_3"
+              },
+              {
+                "lit": "cancelled",
+                "type": "string"
+              }
+            ],
+            "fn": "ne"
+          },
+          "source_id": "orders"
+        },
+        {
+          "role": "b",
+          "scope": null,
+          "source_id": "tax_documents"
+        }
+      ],
+      "timing_rules": []
+    },
+    {
+      "entity_ids": [
+        "US01",
+        "EU01",
+        "UK01"
+      ],
+      "kind": "matching",
+      "match_set_id": "t10_tax_remittance",
+      "name": "Template 10: tax remittances to tax documents",
+      "owners": {
+        "preparer": "close.preparer",
+        "reviewer": "close.reviewer"
+      },
+      "pass_rules": [
+        {
+          "allow_ambiguous_auto": false,
+          "ambiguity": "unique_only",
+          "conditions": [
+            {
+              "condition": "key_equals",
+              "left": {
+                "col": "c.entity_id"
+              },
+              "right": {
+                "col": "b.entity_id"
+              }
+            },
+            {
+              "condition": "key_equals",
+              "left": {
+                "col": "c.text_1"
+              },
+              "right": {
+                "col": "b.text_1"
+              }
+            },
+            {
+              "condition": "key_equals",
+              "left": {
+                "col": "c.text_2"
+              },
+              "right": {
+                "args": [
+                  {
+                    "args": [
+                      {
+                        "col": "b.transaction_date"
+                      }
+                    ],
+                    "fn": "cast_string"
+                  },
+                  {
+                    "lit": 1,
+                    "type": "bigint"
+                  },
+                  {
+                    "lit": 7,
+                    "type": "bigint"
+                  }
+                ],
+                "fn": "substring"
+              }
+            },
+            {
+              "absolute_minor": 0,
+              "bps": 0,
+              "cap_minor": 0,
+              "condition": "amount",
+              "left": {
+                "col": "c.amount_minor"
+              },
+              "mode": "exact",
+              "right": {
+                "col": "b.amount_minor"
+              }
+            },
+            {
+              "condition": "currency",
+              "mode": "equal",
+              "tolerance_bps": 0
+            }
+          ],
+          "group_by": [
+            {
+              "col": "b.entity_id"
+            },
+            {
+              "col": "b.text_1"
+            },
+            {
+              "args": [
+                {
+                  "args": [
+                    {
+                      "col": "b.transaction_date"
+                    }
+                  ],
+                  "fn": "cast_string"
+                },
+                {
+                  "lit": 1,
+                  "type": "bigint"
+                },
+                {
+                  "lit": 7,
+                  "type": "bigint"
+                }
+              ],
+              "fn": "substring"
+            }
+          ],
+          "kind": "1:M",
+          "limits": {
+            "max_block_pairs": 1000000,
+            "max_candidates_per_item": 50,
+            "subset_max_candidates": 24,
+            "work_budget": 1048576
+          },
+          "name": "Remittance equals its period's documents",
+          "outcome": "auto",
+          "rule_id": "period_total",
+          "sides": [
+            "c",
+            "b"
+          ]
+        }
+      ],
+      "schedule": {
+        "at_utc": null,
+        "mode": "manual"
+      },
+      "sources": [
+        {
+          "role": "c",
+          "scope": null,
+          "source_id": "tax_remittances"
+        },
+        {
+          "role": "b",
+          "scope": null,
+          "source_id": "tax_documents"
+        }
+      ],
+      "timing_rules": []
+    }
+  ]
+}

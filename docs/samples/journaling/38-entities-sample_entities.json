@@ -1,0 +1,30 @@
+{
+  "_sample": "SAMPLE configuration for testing, not your company's accounting (docs/domain/sample-journal-rules.md)",
+  "body": {
+    "effective_from": "2026-06-01",
+    "spec": {
+      "entities": [
+        {
+          "entity_id": "US01",
+          "functional_currency": "USD",
+          "minor_units": 2,
+          "name": "Platform Inc. (US)"
+        },
+        {
+          "entity_id": "EU01",
+          "functional_currency": "EUR",
+          "minor_units": 2,
+          "name": "Platform B.V. (EU)"
+        },
+        {
+          "entity_id": "UK01",
+          "functional_currency": "GBP",
+          "minor_units": 2,
+          "name": "Platform Ltd (UK)"
+        }
+      ],
+      "entity_set_id": "sample_entities"
+    }
+  },
+  "resource": "entities"
+}

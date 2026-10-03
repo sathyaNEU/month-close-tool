@@ -1,0 +1,1030 @@
+{
+  "$defs": {
+    "Ambiguity": {
+      "enum": [
+        "unique_only",
+        "best_unique",
+        "greedy_total_order"
+      ],
+      "title": "Ambiguity",
+      "type": "string"
+    },
+    "AmountTolerance": {
+      "additionalProperties": false,
+      "description": "Integer arithmetic on minor units: exact, absolute, basis points, or basis points with a cap.",
+      "properties": {
+        "absolute_minor": {
+          "default": 0,
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Absolute Minor",
+          "type": "integer"
+        },
+        "bps": {
+          "default": 0,
+          "maximum": 10000,
+          "minimum": 0,
+          "title": "Bps",
+          "type": "integer"
+        },
+        "cap_minor": {
+          "default": 0,
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "title": "Cap Minor",
+          "type": "integer"
+        },
+        "condition": {
+          "const": "amount",
+          "default": "amount",
+          "title": "Condition",
+          "type": "string"
+        },
+        "left": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/Col"
+            },
+            {
+              "$ref": "#/$defs/Lit"
+            },
+            {
+              "$ref": "#/$defs/Call"
+            }
+          ],
+          "title": "Left"
+        },
+        "mode": {
+          "enum": [
+            "exact",
+            "absolute",
+            "bps",
+            "bps_capped"
+          ],
+          "title": "Mode",
+          "type": "string"
+        },
+        "right": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/Col"
+            },
+            {
+              "$ref": "#/$defs/Lit"
+            },
+            {
+              "$ref": "#/$defs/Call"
+            }
+          ],
+          "title": "Right"
+        }
+      },
+      "required": [
+        "left",
+        "right",
+        "mode"
+      ],
+      "title": "AmountTolerance",
+      "type": "object"
+    },
+    "Call": {
+      "additionalProperties": false,
+      "properties": {
+        "args": {
+          "default": [],
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/Col"
+              },
+              {
+                "$ref": "#/$defs/Lit"
+              },
+              {
+                "$ref": "#/$defs/Call"
+              }
+            ]
+          },
+          "maxItems": 64,
+          "title": "Args",
+          "type": "array"
+        },
+        "fn": {
+          "pattern": "^[a-z][a-z0-9_]{0,63}$",
+          "title": "Fn",
+          "type": "string"
+        }
+      },
+      "required": [
+        "fn"
+      ],
+      "title": "Call",
+      "type": "object"
+    },
+    "Col": {
+      "additionalProperties": false,
+      "properties": {
+        "col": {
+          "pattern": "^(?:[abc]\\.)?[A-Za-z_][A-Za-z0-9_]{0,127}$",
+          "title": "Col",
+          "type": "string"
+        }
+      },
+      "required": [
+        "col"
+      ],
+      "title": "Col",
+      "type": "object"
+    },
+    "ConfigKind": {
+      "enum": [
+        "data_source",
+        "match_set",
+        "accounting_policy",
+        "event_type",
+        "auto_journal_definition",
+        "account_mapping",
+        "chart_of_accounts",
+        "dimension_set",
+        "entity_set",
+        "journal_template",
+        "approval_matrix",
+        "recurring_journal",
+        "close_checklist",
+        "flux_rules"
+      ],
+      "title": "ConfigKind",
+      "type": "string"
+    },
+    "ConfigStatus": {
+      "enum": [
+        "draft",
+        "submitted",
+        "approved",
+        "active",
+        "retired"
+      ],
+      "title": "ConfigStatus",
+      "type": "string"
+    },
+    "CurrencyRule": {
+      "additionalProperties": false,
+      "properties": {
+        "condition": {
+          "const": "currency",
+          "default": "currency",
+          "title": "Condition",
+          "type": "string"
+        },
+        "mode": {
+          "enum": [
+            "equal",
+            "fx_converted"
+          ],
+          "title": "Mode",
+          "type": "string"
+        },
+        "tolerance_bps": {
+          "default": 0,
+          "maximum": 10000,
+          "minimum": 0,
+          "title": "Tolerance Bps",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "mode"
+      ],
+      "title": "CurrencyRule",
+      "type": "object"
+    },
+    "DateWindow": {
+      "additionalProperties": false,
+      "description": "``right`` within [left - before, left + after], in calendar or business days (asymmetric allowed).",
+      "properties": {
+        "after": {
+          "maximum": 366,
+          "minimum": 0,
+          "title": "After",
+          "type": "integer"
+        },
+        "before": {
+          "maximum": 366,
+          "minimum": 0,
+          "title": "Before",
+          "type": "integer"
+        },
+        "calendar": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Z][A-Z0-9_]{1,31}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Calendar"
+        },
+        "condition": {
+          "const": "date_window",
+          "default": "date_window",
+          "title": "Condition",
+          "type": "string"
+        },
+        "left": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/Col"
+            },
+            {
+              "$ref": "#/$defs/Lit"
+            },
+            {
+              "$ref": "#/$defs/Call"
+            }
+          ],
+          "title": "Left"
+        },
+        "right": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/Col"
+            },
+            {
+              "$ref": "#/$defs/Lit"
+            },
+            {
+              "$ref": "#/$defs/Call"
+            }
+          ],
+          "title": "Right"
+        },
+        "unit": {
+          "enum": [
+            "calendar_days",
+            "business_days"
+          ],
+          "title": "Unit",
+          "type": "string"
+        }
+      },
+      "required": [
+        "left",
+        "right",
+        "unit",
+        "before",
+        "after"
+      ],
+      "title": "DateWindow",
+      "type": "object"
+    },
+    "DslType": {
+      "enum": [
+        "string",
+        "bigint",
+        "boolean",
+        "date",
+        "timestamp",
+        "decimal"
+      ],
+      "title": "DslType",
+      "type": "string"
+    },
+    "ExpressionCondition": {
+      "additionalProperties": false,
+      "description": "Any boolean DSL expression over both sides, for what the typed conditions do not cover.",
+      "properties": {
+        "condition": {
+          "const": "expression",
+          "default": "expression",
+          "title": "Condition",
+          "type": "string"
+        },
+        "expr": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/Col"
+            },
+            {
+              "$ref": "#/$defs/Lit"
+            },
+            {
+              "$ref": "#/$defs/Call"
+            }
+          ],
+          "title": "Expr"
+        }
+      },
+      "required": [
+        "expr"
+      ],
+      "title": "ExpressionCondition",
+      "type": "object"
+    },
+    "KeyEquals": {
+      "additionalProperties": false,
+      "description": "An exact key: the rule blocks on it with an equi-join.",
+      "properties": {
+        "condition": {
+          "const": "key_equals",
+          "default": "key_equals",
+          "title": "Condition",
+          "type": "string"
+        },
+        "left": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/Col"
+            },
+            {
+              "$ref": "#/$defs/Lit"
+            },
+            {
+              "$ref": "#/$defs/Call"
+            }
+          ],
+          "title": "Left"
+        },
+        "right": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/Col"
+            },
+            {
+              "$ref": "#/$defs/Lit"
+            },
+            {
+              "$ref": "#/$defs/Call"
+            }
+          ],
+          "title": "Right"
+        }
+      },
+      "required": [
+        "left",
+        "right"
+      ],
+      "title": "KeyEquals",
+      "type": "object"
+    },
+    "Limits": {
+      "additionalProperties": false,
+      "description": "Work limits: an item or block over them is never auto-matched (``too_many_candidates``).",
+      "properties": {
+        "max_block_pairs": {
+          "default": 1000000,
+          "maximum": 100000000,
+          "minimum": 1,
+          "title": "Max Block Pairs",
+          "type": "integer"
+        },
+        "max_candidates_per_item": {
+          "default": 50,
+          "maximum": 1000,
+          "minimum": 1,
+          "title": "Max Candidates Per Item",
+          "type": "integer"
+        },
+        "subset_max_candidates": {
+          "default": 24,
+          "maximum": 24,
+          "minimum": 2,
+          "title": "Subset Max Candidates",
+          "type": "integer"
+        },
+        "work_budget": {
+          "default": 1048576,
+          "maximum": 16777216,
+          "minimum": 1,
+          "title": "Work Budget",
+          "type": "integer"
+        }
+      },
+      "title": "Limits",
+      "type": "object"
+    },
+    "Lit": {
+      "additionalProperties": false,
+      "properties": {
+        "lit": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "maximum": 9007199254740991,
+              "minimum": -9007199254740991,
+              "type": "integer"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Lit"
+        },
+        "type": {
+          "$ref": "#/$defs/DslType"
+        }
+      },
+      "required": [
+        "lit",
+        "type"
+      ],
+      "title": "Lit",
+      "type": "object"
+    },
+    "MatchSet": {
+      "additionalProperties": false,
+      "properties": {
+        "entity_ids": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 64,
+          "minItems": 1,
+          "title": "Entity Ids",
+          "type": "array"
+        },
+        "kind": {
+          "default": "matching",
+          "enum": [
+            "matching",
+            "intercompany"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "match_set_id": {
+          "pattern": "^[a-z][a-z0-9_]{2,63}$",
+          "title": "Match Set Id",
+          "type": "string"
+        },
+        "name": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "owners": {
+          "$ref": "#/$defs/Owners"
+        },
+        "pass_rules": {
+          "items": {
+            "$ref": "#/$defs/PassRule"
+          },
+          "maxItems": 50,
+          "minItems": 1,
+          "title": "Pass Rules",
+          "type": "array"
+        },
+        "schedule": {
+          "$ref": "#/$defs/Schedule",
+          "default": {
+            "at_utc": null,
+            "mode": "manual"
+          }
+        },
+        "sources": {
+          "items": {
+            "$ref": "#/$defs/SourceBinding"
+          },
+          "maxItems": 3,
+          "minItems": 1,
+          "title": "Sources",
+          "type": "array"
+        },
+        "timing_rules": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/TimingRule"
+          },
+          "maxItems": 20,
+          "title": "Timing Rules",
+          "type": "array"
+        }
+      },
+      "required": [
+        "match_set_id",
+        "name",
+        "entity_ids",
+        "sources",
+        "pass_rules",
+        "owners"
+      ],
+      "title": "MatchSet",
+      "type": "object"
+    },
+    "Outcome": {
+      "enum": [
+        "auto",
+        "suggested"
+      ],
+      "title": "Outcome",
+      "type": "string"
+    },
+    "Owners": {
+      "additionalProperties": false,
+      "properties": {
+        "preparer": {
+          "pattern": "^[A-Za-z0-9._@-]{1,128}$",
+          "title": "Preparer",
+          "type": "string"
+        },
+        "reviewer": {
+          "pattern": "^[A-Za-z0-9._@-]{1,128}$",
+          "title": "Reviewer",
+          "type": "string"
+        }
+      },
+      "required": [
+        "preparer",
+        "reviewer"
+      ],
+      "title": "Owners",
+      "type": "object"
+    },
+    "PassRule": {
+      "additionalProperties": false,
+      "properties": {
+        "allow_ambiguous_auto": {
+          "default": false,
+          "title": "Allow Ambiguous Auto",
+          "type": "boolean"
+        },
+        "ambiguity": {
+          "$ref": "#/$defs/Ambiguity",
+          "default": "unique_only"
+        },
+        "conditions": {
+          "items": {
+            "discriminator": {
+              "mapping": {
+                "amount": "#/$defs/AmountTolerance",
+                "currency": "#/$defs/CurrencyRule",
+                "date_window": "#/$defs/DateWindow",
+                "expression": "#/$defs/ExpressionCondition",
+                "key_equals": "#/$defs/KeyEquals",
+                "sign": "#/$defs/SignRule",
+                "text": "#/$defs/TextMatch"
+              },
+              "propertyName": "condition"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/$defs/KeyEquals"
+              },
+              {
+                "$ref": "#/$defs/TextMatch"
+              },
+              {
+                "$ref": "#/$defs/DateWindow"
+              },
+              {
+                "$ref": "#/$defs/AmountTolerance"
+              },
+              {
+                "$ref": "#/$defs/SignRule"
+              },
+              {
+                "$ref": "#/$defs/CurrencyRule"
+              },
+              {
+                "$ref": "#/$defs/ExpressionCondition"
+              }
+            ]
+          },
+          "maxItems": 20,
+          "minItems": 1,
+          "title": "Conditions",
+          "type": "array"
+        },
+        "group_by": {
+          "default": [],
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/Col"
+              },
+              {
+                "$ref": "#/$defs/Lit"
+              },
+              {
+                "$ref": "#/$defs/Call"
+              }
+            ]
+          },
+          "maxItems": 8,
+          "title": "Group By",
+          "type": "array"
+        },
+        "kind": {
+          "$ref": "#/$defs/RuleKind"
+        },
+        "limits": {
+          "$ref": "#/$defs/Limits",
+          "default": {
+            "max_block_pairs": 1000000,
+            "max_candidates_per_item": 50,
+            "subset_max_candidates": 24,
+            "work_budget": 1048576
+          }
+        },
+        "name": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "outcome": {
+          "$ref": "#/$defs/Outcome"
+        },
+        "rule_id": {
+          "pattern": "^[a-z][a-z0-9_]{2,63}$",
+          "title": "Rule Id",
+          "type": "string"
+        },
+        "sides": {
+          "items": {
+            "$ref": "#/$defs/Role"
+          },
+          "maxItems": 2,
+          "minItems": 1,
+          "title": "Sides",
+          "type": "array"
+        }
+      },
+      "required": [
+        "rule_id",
+        "name",
+        "kind",
+        "sides",
+        "outcome",
+        "conditions"
+      ],
+      "title": "PassRule",
+      "type": "object"
+    },
+    "Role": {
+      "enum": [
+        "a",
+        "b",
+        "c"
+      ],
+      "title": "Role",
+      "type": "string"
+    },
+    "RuleKind": {
+      "enum": [
+        "1:1",
+        "1:M",
+        "M:1",
+        "M:M",
+        "self_net",
+        "chain"
+      ],
+      "title": "RuleKind",
+      "type": "string"
+    },
+    "Schedule": {
+      "additionalProperties": false,
+      "properties": {
+        "at_utc": {
+          "anyOf": [
+            {
+              "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "At Utc"
+        },
+        "mode": {
+          "enum": [
+            "manual",
+            "daily"
+          ],
+          "title": "Mode",
+          "type": "string"
+        }
+      },
+      "required": [
+        "mode"
+      ],
+      "title": "Schedule",
+      "type": "object"
+    },
+    "SignRule": {
+      "additionalProperties": false,
+      "properties": {
+        "condition": {
+          "const": "sign",
+          "default": "sign",
+          "title": "Condition",
+          "type": "string"
+        },
+        "mode": {
+          "enum": [
+            "same",
+            "opposite",
+            "absolute"
+          ],
+          "title": "Mode",
+          "type": "string"
+        }
+      },
+      "required": [
+        "mode"
+      ],
+      "title": "SignRule",
+      "type": "object"
+    },
+    "SourceBinding": {
+      "additionalProperties": false,
+      "properties": {
+        "role": {
+          "$ref": "#/$defs/Role"
+        },
+        "scope": {
+          "anyOf": [
+            {
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/Col"
+                },
+                {
+                  "$ref": "#/$defs/Lit"
+                },
+                {
+                  "$ref": "#/$defs/Call"
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Scope"
+        },
+        "source_id": {
+          "pattern": "^[a-z][a-z0-9_]{2,63}$",
+          "title": "Source Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "role",
+        "source_id"
+      ],
+      "title": "SourceBinding",
+      "type": "object"
+    },
+    "TextMatch": {
+      "additionalProperties": false,
+      "properties": {
+        "algorithm": {
+          "anyOf": [
+            {
+              "enum": [
+                "levenshtein",
+                "jaro_winkler"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Algorithm"
+        },
+        "condition": {
+          "const": "text",
+          "default": "text",
+          "title": "Condition",
+          "type": "string"
+        },
+        "group": {
+          "default": 1,
+          "maximum": 9,
+          "minimum": 0,
+          "title": "Group",
+          "type": "integer"
+        },
+        "left": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/Col"
+            },
+            {
+              "$ref": "#/$defs/Lit"
+            },
+            {
+              "$ref": "#/$defs/Call"
+            }
+          ],
+          "title": "Left"
+        },
+        "min_needle_length": {
+          "default": 4,
+          "maximum": 256,
+          "minimum": 1,
+          "title": "Min Needle Length",
+          "type": "integer"
+        },
+        "min_similarity_bps": {
+          "anyOf": [
+            {
+              "maximum": 10000,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Min Similarity Bps"
+        },
+        "op": {
+          "enum": [
+            "equals",
+            "normalized_equals",
+            "contains",
+            "starts_with",
+            "ends_with",
+            "regex_extract_equals",
+            "fuzzy"
+          ],
+          "title": "Op",
+          "type": "string"
+        },
+        "pattern": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Pattern"
+        },
+        "right": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/Col"
+            },
+            {
+              "$ref": "#/$defs/Lit"
+            },
+            {
+              "$ref": "#/$defs/Call"
+            }
+          ],
+          "title": "Right"
+        }
+      },
+      "required": [
+        "op",
+        "left",
+        "right"
+      ],
+      "title": "TextMatch",
+      "type": "object"
+    },
+    "TimingRule": {
+      "additionalProperties": false,
+      "description": "Classifies an unmatched item as in transit, expected to clear within N business days.",
+      "properties": {
+        "calendar": {
+          "pattern": "^[A-Z][A-Z0-9_]{1,31}$",
+          "title": "Calendar",
+          "type": "string"
+        },
+        "expected_clear_business_days": {
+          "maximum": 60,
+          "minimum": 0,
+          "title": "Expected Clear Business Days",
+          "type": "integer"
+        },
+        "role": {
+          "$ref": "#/$defs/Role"
+        },
+        "rule_id": {
+          "pattern": "^[a-z][a-z0-9_]{2,63}$",
+          "title": "Rule Id",
+          "type": "string"
+        },
+        "when": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/Col"
+            },
+            {
+              "$ref": "#/$defs/Lit"
+            },
+            {
+              "$ref": "#/$defs/Call"
+            }
+          ],
+          "title": "When"
+        }
+      },
+      "required": [
+        "rule_id",
+        "role",
+        "when",
+        "expected_clear_business_days",
+        "calendar"
+      ],
+      "title": "TimingRule",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "approver": {
+      "anyOf": [
+        {
+          "pattern": "^[A-Za-z0-9._@-]{1,128}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Approver"
+    },
+    "author": {
+      "pattern": "^[A-Za-z0-9._@-]{1,128}$",
+      "title": "Author",
+      "type": "string"
+    },
+    "config_id": {
+      "pattern": "^[a-z][a-z0-9_]{2,63}$",
+      "title": "Config Id",
+      "type": "string"
+    },
+    "content_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Content Hash",
+      "type": "string"
+    },
+    "effective_from": {
+      "format": "date",
+      "title": "Effective From",
+      "type": "string"
+    },
+    "effective_to": {
+      "anyOf": [
+        {
+          "format": "date",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Effective To"
+    },
+    "kind": {
+      "$ref": "#/$defs/ConfigKind"
+    },
+    "spec": {
+      "$ref": "#/$defs/MatchSet"
+    },
+    "status": {
+      "$ref": "#/$defs/ConfigStatus"
+    },
+    "version": {
+      "maximum": 2147483647,
+      "minimum": 1,
+      "title": "Version",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "kind",
+    "config_id",
+    "version",
+    "status",
+    "effective_from",
+    "author",
+    "content_hash",
+    "spec"
+  ],
+  "title": "Envelope[MatchSet]",
+  "type": "object"
+}

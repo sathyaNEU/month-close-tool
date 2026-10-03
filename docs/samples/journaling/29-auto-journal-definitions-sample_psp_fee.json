@@ -1,0 +1,59 @@
+{
+  "_sample": "SAMPLE configuration for testing, not your company's accounting (docs/domain/sample-journal-rules.md)",
+  "body": {
+    "effective_from": "2026-06-01",
+    "spec": {
+      "condition": null,
+      "definition_id": "sample_psp_fee",
+      "event_types": [
+        "PSP_FEE"
+      ],
+      "lines": [
+        {
+          "account": {
+            "account": null,
+            "keys": [
+              {
+                "col": "policy_processing_fees"
+              }
+            ],
+            "mapping": "sample_processing_fee_account"
+          },
+          "amount": {
+            "col": "amount_fee"
+          },
+          "condition": null,
+          "description": null,
+          "dimensions": {},
+          "line_id": "fee",
+          "side": "DR"
+        },
+        {
+          "account": {
+            "account": null,
+            "keys": [
+              {
+                "col": "policy_psp_receivable"
+              }
+            ],
+            "mapping": "sample_psp_receivable_account"
+          },
+          "amount": {
+            "col": "amount_fee"
+          },
+          "condition": null,
+          "description": null,
+          "dimensions": {
+            "psp": {
+              "col": "attr_psp"
+            }
+          },
+          "line_id": "psp",
+          "side": "CR"
+        }
+      ],
+      "name": "Processing fees taken out of the settlement"
+    }
+  },
+  "resource": "auto-journal-definitions"
+}

@@ -1,0 +1,3 @@
+account_code,account_name,account_type,normal_balance,postable,parent_code,entities,currency,status,description
+EXAMPLE-1010,Cash - operating account,asset,debit,Y,,US01,USD,active,Example row only: replace with your accounts
+EXAMPLE-2100,Seller payables,liability,credit,Y,,,,active,Example row only: blank entities means every entity

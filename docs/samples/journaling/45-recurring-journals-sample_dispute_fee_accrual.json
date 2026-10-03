@@ -1,0 +1,41 @@
+{
+  "_sample": "SAMPLE configuration for testing, not your company's accounting (docs/domain/sample-journal-rules.md)",
+  "body": {
+    "effective_from": "2026-06-01",
+    "spec": {
+      "auto_approve": false,
+      "currency": null,
+      "day": 5,
+      "description": "Quarterly accrual of payment provider dispute fees",
+      "entity_id": "EU01",
+      "first_period": "2026-07",
+      "frequency": "quarterly",
+      "header": {
+        "accrual_type": "fees"
+      },
+      "last_period": null,
+      "lines": [
+        {
+          "account": "6050",
+          "amount_minor": 1250000,
+          "description": "Dispute fees",
+          "dimensions": {},
+          "side": "DR",
+          "values": {}
+        },
+        {
+          "account": "2430",
+          "amount_minor": 1250000,
+          "description": "Fees payable",
+          "dimensions": {},
+          "side": "CR",
+          "values": {}
+        }
+      ],
+      "preparer": "1004",
+      "recurring_id": "sample_dispute_fee_accrual",
+      "template_id": "sample_accrual"
+    }
+  },
+  "resource": "recurring-journals"
+}

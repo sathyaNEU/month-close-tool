@@ -1,0 +1,116 @@
+{
+  "$defs": {
+    "Dimension": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "pattern": "^[a-z][a-z0-9_]{0,40}$",
+          "title": "Code",
+          "type": "string"
+        },
+        "name": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "open_values": {
+          "default": false,
+          "title": "Open Values",
+          "type": "boolean"
+        },
+        "required_accounts": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Required Accounts",
+          "type": "array"
+        },
+        "required_on": {
+          "default": [],
+          "items": {
+            "enum": [
+              "asset",
+              "liability",
+              "equity",
+              "revenue",
+              "expense"
+            ],
+            "type": "string"
+          },
+          "title": "Required On",
+          "type": "array"
+        },
+        "values": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/DimensionValue"
+          },
+          "title": "Values",
+          "type": "array"
+        }
+      },
+      "required": [
+        "code",
+        "name"
+      ],
+      "title": "Dimension",
+      "type": "object"
+    },
+    "DimensionValue": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "maxLength": 64,
+          "minLength": 1,
+          "title": "Code",
+          "type": "string"
+        },
+        "name": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "status": {
+          "default": "active",
+          "enum": [
+            "active",
+            "inactive"
+          ],
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "code",
+        "name"
+      ],
+      "title": "DimensionValue",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "dimension_set_id": {
+      "pattern": "^[a-z][a-z0-9_]{2,63}$",
+      "title": "Dimension Set Id",
+      "type": "string"
+    },
+    "dimensions": {
+      "items": {
+        "$ref": "#/$defs/Dimension"
+      },
+      "maxItems": 20,
+      "title": "Dimensions",
+      "type": "array"
+    }
+  },
+  "required": [
+    "dimension_set_id",
+    "dimensions"
+  ],
+  "title": "DimensionSet",
+  "type": "object"
+}

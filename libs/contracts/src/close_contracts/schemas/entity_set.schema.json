@@ -1,0 +1,62 @@
+{
+  "$defs": {
+    "Entity": {
+      "additionalProperties": false,
+      "properties": {
+        "entity_id": {
+          "pattern": "^[A-Z0-9]{2,16}$",
+          "title": "Entity Id",
+          "type": "string"
+        },
+        "functional_currency": {
+          "pattern": "^[A-Z]{3}$",
+          "title": "Functional Currency",
+          "type": "string"
+        },
+        "minor_units": {
+          "default": 2,
+          "maximum": 4,
+          "minimum": 0,
+          "title": "Minor Units",
+          "type": "integer"
+        },
+        "name": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "entity_id",
+        "name",
+        "functional_currency"
+      ],
+      "title": "Entity",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "entities": {
+      "items": {
+        "$ref": "#/$defs/Entity"
+      },
+      "maxItems": 500,
+      "minItems": 1,
+      "title": "Entities",
+      "type": "array"
+    },
+    "entity_set_id": {
+      "pattern": "^[a-z][a-z0-9_]{2,63}$",
+      "title": "Entity Set Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "entity_set_id",
+    "entities"
+  ],
+  "title": "EntitySet",
+  "type": "object"
+}
